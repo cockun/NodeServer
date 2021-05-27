@@ -16,7 +16,7 @@ async function getOracleDB() {
   } finally {
     if (connection) {
       try {
-        // Always close connections
+        // Always close connect
         await connection.close(); 
         console.log('close connection success');
       } catch (err) {
