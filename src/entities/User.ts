@@ -20,12 +20,14 @@ export class User implements IUser {
     public pwdHash: string;
 
 
+
     constructor(
         nameOrUser?: string | IUser,
         email?: string,
         role?: UserRoles,
         pwdHash?: string,
         id?: number,
+        coc?: string
     ) {
         if (typeof nameOrUser === 'string' || typeof nameOrUser === 'undefined') {
             this.name = nameOrUser || '';
@@ -33,12 +35,14 @@ export class User implements IUser {
             this.role = role || UserRoles.Standard;
             this.pwdHash = pwdHash || '';
             this.id = id || -1;
+          
         } else {
             this.name = nameOrUser.name;
             this.email = nameOrUser.email;
             this.role = nameOrUser.role;
             this.pwdHash = nameOrUser.pwdHash;
             this.id = nameOrUser.id;
+            
         }
     }
 }
