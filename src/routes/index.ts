@@ -21,20 +21,6 @@ userRouter.put('/update', updateOneUser);
 userRouter.delete('/delete/:id', deleteOneUser);
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // Export the base-router
 const baseRouter = Router();
 baseRouter.use('/auth', authRouter);
