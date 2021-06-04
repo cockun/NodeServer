@@ -1,24 +1,30 @@
+import { Account } from '@entities/Account';
 import { IUser } from '@entities/User';
+import OracleDB from '../OracleDb/OracleDB';
 
 
 
 export interface IUserDao {
-    getOne: (email: string) => Promise<IUser | null>;
+    getOne: (email: string) => Promise<Account | undefined> ;
     getAll: () => Promise<IUser[]>;
     add: (user: IUser) => Promise<void>;
     update: (user: IUser) => Promise<void>;
     delete: (id: number) => Promise<void>;
 }
 
-class UserDao implements IUserDao {
+class UserDao extends OracleDB implements IUserDao {
 
 
     /**
      * @param email
      */
-    public getOne(email: string): Promise<IUser | null> {
-        // TODO
-        return Promise.resolve(null);
+    public async getOne(email: string): Promise<Account | undefined> {
+        const db = this.OpenDB();
+        if(db){
+            const coc =  await db<Account>("ACCOUNTS").select('ID').first();
+            return coc;
+        }
+        return undefined;
     }
 
 

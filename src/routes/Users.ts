@@ -3,8 +3,10 @@ import { Request, Response } from 'express';
 
 import UserDao from '@daos/User/UserDao.mock';
 import { paramMissingError } from '@shared/constants';
-
+import UserDao2 from '@daos/User/UserDao'
+    import { format } from 'morgan';
 const userDao = new UserDao();
+const userDao2 = new UserDao2();
 const { BAD_REQUEST, CREATED, OK } = StatusCodes;
 
 
@@ -17,8 +19,8 @@ const { BAD_REQUEST, CREATED, OK } = StatusCodes;
  * @returns 
  */
 export async function getAllUsers(req: Request, res: Response) {
-    const users = await userDao.getAll();
-    return res.status(OK).json({users});
+    const accounts = await userDao2.getOne("");
+    return res.status(OK).json({accounts});
 }
 
 
