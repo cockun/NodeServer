@@ -1,5 +1,5 @@
 /**
- * Remove old files, copy front-end ones.
+ * Rld files, copy front-end ones.
  */
 
 import fs from 'fs-extra';
