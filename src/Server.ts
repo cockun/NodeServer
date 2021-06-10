@@ -6,12 +6,16 @@ import StatusCodes from 'http-status-codes';
 import express, { NextFunction, Request, Response } from 'express';
 
 import 'express-async-errors';
-
 import BaseRouter from './routes';
 import logger from '@shared/Logger';
 import { cookieProps } from '@shared/constants';
 
+
+import * as swagger from "swagger-express-ts";
+import { SwaggerDefinitionConstant } from "swagger-express-ts";
+
 const app = express();
+
 const { BAD_REQUEST } = StatusCodes;
 
 
@@ -35,6 +39,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // Add APIs
+
 app.use('/api', BaseRouter);
 
 // Print API errors

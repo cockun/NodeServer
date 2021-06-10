@@ -1,10 +1,10 @@
 import StatusCodes from 'http-status-codes';
 import { Request, Response } from 'express';
 
-import AccountDao from '@daos/Account/AccountDao';
+import AccountInfoDao from '@daos/Account/AccountInfoDao';
 import { paramMissingError } from '@shared/constants';
 
-const accountDao = new AccountDao();
+const accountInfoDao = new AccountInfoDao();
 
 const { BAD_REQUEST, CREATED, OK } = StatusCodes;
 
@@ -17,14 +17,14 @@ const { BAD_REQUEST, CREATED, OK } = StatusCodes;
  * @param res 
  * @returns 
  */
-export async function getAllAccounts(req: Request, res: Response) {
-    const accounts = await accountDao.getAll();
+export async function getAllAccountInfos(req: Request, res: Response) {
+    const accounts = await accountInfoDao.getAll();
     return res.status(OK).json({accounts});
 }
 
 export async function getOneById(req: Request, res: Response) {
     const {data} = req.body;
-    const accounts = await accountDao.getOneById(data.id);
+    const accounts = await accountInfoDao.getOneById(data.id);
     return res.status(OK).json({accounts});
 }
 
@@ -32,7 +32,7 @@ export async function getOneById(req: Request, res: Response) {
 
 export async function getOne(req: Request, res: Response) {
     const {data} = req.body;
-    const accounts = await accountDao.getOne(data);
+    const accounts = await accountInfoDao.getOne(data);
     return res.status(OK).json({accounts});
 }
 
@@ -43,16 +43,6 @@ export async function getOne(req: Request, res: Response) {
  * @param res 
  * @returns 
  */
-export async function addOneAccount(req: Request, res: Response) {
-    const { data } = req.body;
-    if (!data) {
-        return res.status(BAD_REQUEST).json({
-            error: paramMissingError,
-        });
-    }
-    let id =  await accountDao.add(data);
-    return res.status(CREATED).json(id);
-}
 
 
 /**
@@ -62,7 +52,7 @@ export async function addOneAccount(req: Request, res: Response) {
  * @param res 
  * @returns 
  */
-export async function updateOneAccount(req: Request, res: Response) {
+export async function updateOneAccountInfo(req: Request, res: Response) {
     const { data } = req.body;
     if (!data) {
         return res.status(BAD_REQUEST).json({
@@ -70,7 +60,7 @@ export async function updateOneAccount(req: Request, res: Response) {
         });
     }
     
-    await accountDao.update(data);
+    await accountInfoDao.update(data);
     return res.status(OK).end();
 }
 
@@ -82,8 +72,8 @@ export async function updateOneAccount(req: Request, res: Response) {
  * @param res 
  * @returns 
  */
-export async function deleteOneAccount(req: Request, res: Response) {
-    const { id } = req.params;
-    await accountDao.delete(id);
+export async function deleteOneAccountInfo(req: Request, res: Response) {
+    const { data } = req.body;
+    await accountInfoDao.delete(data.id);
     return res.status(OK).end();
 }

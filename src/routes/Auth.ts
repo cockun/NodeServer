@@ -2,11 +2,11 @@ import bcrypt from 'bcrypt';
 import { Request, Response, Router } from 'express';
 import StatusCodes from 'http-status-codes';
 
-import UserDao from '@daos/User/UserDao.mock';
+import AccountDao from '@daos/Account/AccountDao';
 import { JwtService } from '@shared/JwtService';
 import { paramMissingError, loginFailedErr, cookieProps } from '@shared/constants';
 
-const userDao = new UserDao();
+const accountDao = new AccountDao();
 const jwtService = new JwtService();
 const { BAD_REQUEST, OK, UNAUTHORIZED } = StatusCodes;
 
@@ -21,21 +21,22 @@ const { BAD_REQUEST, OK, UNAUTHORIZED } = StatusCodes;
  */
 export async function login(req: Request, res: Response) {
     // Check email and password present
-    const { email, password } = req.body;
-    if (!(email && password)) {
+    const { username, password } = req.body;
+    if (!(username && password)) {
         return res.status(BAD_REQUEST).json({
             error: paramMissingError,
         });
     }
     // Fetch user
-    const user = await userDao.getOne(email);
+    const user = await accountDao.getOne(username);
     if (!user) {
         return res.status(UNAUTHORIZED).json({
             error: loginFailedErr,
         });
     }
     // Check password
-    const pwdPassed = await bcrypt.compare(password, user.pwdHash);
+    //const pwdPassed = await bcrypt.compare(password, user.pwdHash);
+    const pwdPassed = await bcrypt.compare(password, "");
     if (!pwdPassed) {
         return res.status(UNAUTHORIZED).json({
             error: loginFailedErr,
@@ -43,8 +44,8 @@ export async function login(req: Request, res: Response) {
     }
     // Setup Admin Cookie
     const jwt = await jwtService.getJwt({
-        id: user.id,
-        role: user.role,
+        id: Number( user.data?.id),
+        role: Number(user.data?.username),
     });
     const { key, options } = cookieProps;
     res.cookie(key, jwt, options);
