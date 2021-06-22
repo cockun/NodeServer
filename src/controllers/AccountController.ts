@@ -19,6 +19,7 @@ const { BAD_REQUEST, CREATED, OK } = StatusCodes;
  */
 export async function getAllAccounts(req: Request, res: Response) {
     const accounts = await accountDao.getAll();
+    console.log(res.sessionUser)
     return res.status(OK).json({accounts});
 }
 

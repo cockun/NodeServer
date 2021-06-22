@@ -12,10 +12,13 @@ import RoleDao from "./Role";
 
 export interface IAccountInfoDao {
   getOne: (data: IAccountReq) => Promise<IAccountInfo | undefined>;
-  getAll: () => Promise<IAccountInfo[] | undefined>;
-  add: (accountReq: IAccountReq , transaction : Knex.Transaction<any, any[]>) => Promise<Result<IAccountInfo>>
-  update: (account: IAccountReq) => Promise<void>;
-  delete: (id: string) => Promise<void>;
+  getAll: () => Promise<Result<IAccountInfo[]>>;
+  add: (
+    accountReq: IAccountReq,
+    transaction: Knex.Transaction<any, any[]>
+  ) => Promise<Result<number>>;
+  update: (account: IAccountReq) => Promise<Result<string>>;
+
 }
 
 class AccountDao extends OracleDB implements IAccountInfoDao {
@@ -45,77 +48,68 @@ class AccountDao extends OracleDB implements IAccountInfoDao {
     return undefined;
   }
 
-  public async getAll(): Promise<IAccountInfo[] | undefined> {
+  public async getAll(): Promise<Result<IAccountInfo[]>> {
     const db = this.OpenDB();
     if (db) {
-      const result = await db<IAccountInfo>(this.tableName)
-        .select("*")
-      return result;
+      const result = await db<IAccountInfo>(this.tableName).select("*");
+      return new Result<IAccountInfo[]>(result);
     }
-    return undefined;
+    return new Result<IAccountInfo[]>(null,"Truy vấn lỗi");
   }
 
-  public async add(accountReq: IAccountReq , transaction : Knex.Transaction<any, any[]>): Promise<Result<IAccountInfo>> {
+  public async add(
+    accountReq: IAccountReq,
+    transaction: Knex.Transaction<any, any[]>
+  ): Promise<Result<number>> {
     const db = this.OpenDB();
-    let accountInfo= new AccountInfo(accountReq);
+    let accountInfo = new AccountInfo(accountReq);
     if (db) {
-
       try {
-         let roleDao = new RoleDao();
-          let tmp =  await roleDao.getOneByName(accountReq.role?accountReq.role:"User");
-          if(tmp && tmp.data){
-            accountInfo.roleId = tmp.data.id;
-          }else{
-            return new Result<IAccountInfo>(null,"get RoldId null")
-          }
-         
-        let result =  await db<AccountInfo>(this.tableName)
+        let roleDao = new RoleDao();
+        let tmp = await roleDao.getOneByName(
+          accountReq.ROLE ? accountReq.ROLE : "User"
+        );
+        if (tmp && tmp.data) {
+          accountInfo.ROLEID = tmp.data.ID;
+        } else {
+          return new Result<number>(null, "get RoldId null");
+        }
+
+        let result = await db<AccountInfo>(this.tableName)
           .transacting(transaction)
-          .insert(Helper.upcaseKey(accountInfo)).returning("*");
-        return new Result<IAccountInfo>(result[1]);
+          .insert(Helper.upcaseKey(accountInfo));
+        return new Result<number>(result as unknown as number);
       } catch (e) {
-        
-        return new Result<IAccountInfo>(null,e.message) ;
+        return new Result<number>(null, e.message);
       }
     }
-    return new Result<IAccountInfo>(null,"connect oracle err" );
+    return new Result<number>(null, "connect oracle err");
   }
 
-  public async update(account: IAccountReq): Promise<void> {
+  public async update(account: IAccountReq): Promise<Result<any>> {
     const db = this.OpenDB();
-    if (!account.id) {
-      return;
+    if (!account.ID) {
+      return new Result<string>(null,"Thiếu thông tin");
     }
-    
-    if (db) {
-      const transaction = await db.transaction();
-      try {
-        await db<Account>(this.tableName)
-        .transacting(transaction)
-          .where("ID", account.id)
-          .update(Helper.upcaseKey(account))
-        transaction.commit();
-      } catch (e) {
-        transaction.rollback();
-      }
-    }
-  }
-
-  public async delete(id: string): Promise<void> {
-    const db = this.OpenDB();
 
     if (db) {
       const transaction = await db.transaction();
       try {
-        const ressult = await db(this.tableName)
-          .where("ID", id)
-          .del();
+         await db<Account>(this.tableName)
+          .transacting(transaction)
+          .where("ID", account.ID)
+          .update(Helper.upcaseKey(account));
         transaction.commit();
+        return new Result<any>({ID:account.ID});
       } catch (e) {
         transaction.rollback();
+        return new Result<string>(null,e.message);
       }
     }
+    return new Result<string>(null,"Lỗi connect oracle");
   }
+
+  
 }
 
 export default AccountDao;

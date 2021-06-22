@@ -1,15 +1,15 @@
 import { Helper } from "src/utils/Helper";
 
 export interface IRole {
-  id: string;
-  roleName: string;
+  ID: string;
+  ROLENAME: string;
   
 
 }
 
 export class Role implements IRole {
-  public id: string;
-  public roleName: string;
+  public ID: string;
+  public ROLENAME: string;
 
   
 
@@ -17,13 +17,13 @@ export class Role implements IRole {
 
   constructor(
 
-    roleName: string,
+    ROLENAME: string,
    
   
   
   ) {
-    this.id = Helper.generateUID();
-    this.roleName = roleName;
+    this.ID = Helper.generateUID();
+    this.ROLENAME = ROLENAME;
    
     }
 

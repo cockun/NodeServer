@@ -1,31 +1,31 @@
 import { Helper } from "src/utils/Helper";
 
 export interface IAccount {
-  id: string;
-  username: string;
-  password: string;
+  ID: string;
+  USERNAME: string;
+  PASSWORD: string;
   
 
 }
 
 export class Account implements IAccount {
-  public id: string;
-  public username: string;
-  public password: string;
+  public ID: string;
+  public USERNAME: string;
+  public PASSWORD: string;
   
 
 
 
   constructor(
-    username: string,
-    password: string,
+    USERNAME: string,
+    PASSWORD: string,
    
   
   
   ) {
-    this.id = Helper.generateUID();
-    this.username = username;
-    this.password= password;
+    this.ID = Helper.generateUID();
+    this.USERNAME = USERNAME;
+    this.PASSWORD= PASSWORD;
     }
 
 }

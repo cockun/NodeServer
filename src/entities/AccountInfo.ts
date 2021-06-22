@@ -3,35 +3,35 @@ import { AccountReq } from "src/request/AccountReq";
 import { Helper } from "src/utils/Helper";
 
 export interface IAccountInfo {
-  id: string;
-  accountId : string ;
-  roleId:string ;
-  fullname: string;
-  address: string;
-  phone: string;
-  points: number;
-  createDate: Date;
+  ID: string;
+  ACCOUNTID : string ;
+  ROLEID:string ;
+  FULLNAME: string;
+  ADDRESS: string;
+  PHONE: string;
+  POINTS: number;
+  CREATEDATE: Date;
 }
 
 export class AccountInfo implements IAccountInfo {
-  public id: string;
-  public roleId : string ;
-  public accountId : string ;
-  public fullname: string;
-  public address: string;
-  public phone: string;
-  public points: number;
-  public createDate: Date;
+  public ID: string;
+  public ROLEID : string ;
+  public ACCOUNTID : string ;
+  public FULLNAME: string;
+  public ADDRESS: string;
+  public PHONE: string;
+  public POINTS: number;
+  public CREATEDATE: Date;
 
   constructor(accountReq : AccountReq) {
-    this.accountId  = accountReq.id?accountReq.id:"";
-    this.id=Helper.generateUID()
-    this.fullname=accountReq.fullname?accountReq.fullname:"";
-    this.address=accountReq.address?accountReq.address:"";
-    this.phone  = accountReq.phone?accountReq.phone:"";
-    this.points = 0;
-    this.roleId = "";
-    this.createDate= new Date(Date.now());
+    this.ACCOUNTID  = accountReq.ID?accountReq.ID:"";
+    this.ID=Helper.generateUID()
+    this.FULLNAME=accountReq.FULLNAME?accountReq.FULLNAME:"";
+    this.ADDRESS=accountReq.ADDRESS?accountReq.ADDRESS:"";
+    this.PHONE  = accountReq.PHONE?accountReq.PHONE:"";
+    this.POINTS = 0;
+    this.ROLEID = "";
+    this.CREATEDATE= new Date(Date.now());
     
   
 

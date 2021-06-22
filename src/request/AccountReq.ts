@@ -1,13 +1,13 @@
 import { Helper } from "src/utils/Helper";
 
 export interface IAccountReq {
-  id?: string;
-  username?: string;
-  password?: string;
-  fullname?:string;
-  address?:string;
-  phone?:string;
-  role?:string;
+  ID?: string;
+  USERNAME?: string;
+  PASSWORD?: string;
+  FULLNAME?:string;
+  ADDRESS?:string;
+  PHONE?:string;
+  ROLE?:string;
   
   
   
@@ -17,27 +17,27 @@ export interface IAccountReq {
 }
 
 export class AccountReq implements IAccountReq {
-  public id?: string;
-  public username?: string;
-  public password?: string;
-  public fullname?:string;
-  public address?:string;
-  public phone?:string;
-  public role?:string;
+  public ID?: string;
+  public USERNAME?: string;
+  public PASSWORD?: string;
+  public FULLNAME?:string;
+  public ADDRESS?:string;
+  public PHONE?:string;
+  public ROLE?:string;
   
 
 
 
   constructor(
-    username: string,
-    password: string,
+    USERNAME: string,
+    PASSWORD: string,
    
   
   
   ) {
-    this.id = Helper.generateUID();
-    this.username = username;
-    this.password= password;
+    this.ID = Helper.generateUID();
+    this.USERNAME = USERNAME;
+    this.PASSWORD= PASSWORD;
     }
 
 }

@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { adminMW } from './middleware';
 import { login, logout } from './Auth';
 import { getAllAccounts, addOneAccount, updateOneAccount, deleteOneAccount } from '../controllers/AccountController';
+import { getAllAccountInfos, updateOneAccountInfo } from 'src/controllers/AccountInfoController';
 
 
 
@@ -29,9 +30,15 @@ accountRouter.put('/update', updateOneAccount);
 accountRouter.delete('/delete/:id', deleteOneAccount);
 
 
+// AccountInfo-router
+const accountInfoRouter = Router();
+accountInfoRouter.get('/all', getAllAccountInfos);
+accountInfoRouter.put('/update', updateOneAccountInfo);
+
 // Export the base-router
 const baseRouter = Router();
 baseRouter.use('/auth', authRouter);
-baseRouter.use('/accounts', accountRouter);
+baseRouter.use('/accounts',adminMW, accountRouter);
 baseRouter.use('/products', productRouter);
+baseRouter.use('/accountinfos', accountInfoRouter)
 export default baseRouter;

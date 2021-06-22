@@ -18,8 +18,8 @@ const { BAD_REQUEST, CREATED, OK } = StatusCodes;
  * @returns 
  */
 export async function getAllAccountInfos(req: Request, res: Response) {
-    const accounts = await accountInfoDao.getAll();
-    return res.status(OK).json({accounts});
+    const accountInfos = await accountInfoDao.getAll();
+    return res.status(OK).json({accountInfos});
 }
 
 export async function getOneById(req: Request, res: Response) {
@@ -60,20 +60,8 @@ export async function updateOneAccountInfo(req: Request, res: Response) {
         });
     }
     
-    await accountInfoDao.update(data);
-    return res.status(OK).end();
+    const accountInfo=  await accountInfoDao.update(data);
+    return res.status(OK).json(accountInfo);
 }
 
 
-/**
- * Delete one account.
- * 
- * @param req 
- * @param res 
- * @returns 
- */
-export async function deleteOneAccountInfo(req: Request, res: Response) {
-    const { data } = req.body;
-    await accountInfoDao.delete(data.id);
-    return res.status(OK).end();
-}

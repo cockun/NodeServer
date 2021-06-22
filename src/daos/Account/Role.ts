@@ -18,7 +18,7 @@ class RoleDao extends OracleDB implements IRoleDao {
     if (db) {
       const result = await db<IRole>(this.tableName)
         .select("*")
-        .where(Helper.upcaseKey({roleName:roleName}))
+        .where("ROLENAME",roleName)
         .first();
       return new Result<IRole>(result) ;
     }

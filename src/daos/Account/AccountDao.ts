@@ -55,12 +55,12 @@ class AccountDao extends OracleDB implements IAccountDao {
     return undefined;
   }
 
-  public async add(accountReq: IAccountReq): Promise<Result<string>> {
+  public async  add(accountReq: IAccountReq): Promise<Result<string>> {
     const db = this.OpenDB();
     let account: Account;
-    if (accountReq.username && accountReq.password) {
-      account = new Account(accountReq.username, accountReq.password);
-      accountReq.id = account.id;
+    if (accountReq.USERNAME && accountReq.PASSWORD) {
+      account = new Account(accountReq.USERNAME, accountReq.PASSWORD);
+      accountReq.ID = account.ID;
     } else {
       return new Result<string>( null, "Vui lòng nhập đủ thông tin");
     }
@@ -73,14 +73,15 @@ class AccountDao extends OracleDB implements IAccountDao {
           .insert(Helper.upcaseKey(account));
         let result = await accountInfoDao.add(accountReq,transaction);  
         if(result && result.data){
-          console.log(1)
           transaction.commit();
+          return new Result<string>(account.ID);
         }else{
           transaction.rollback();
           return new Result<string>(null,result.err?result.err:"Error");
         }
-       
-        return new Result<string>(account.id);
+
+      
+        
       } catch (e) {
         transaction.rollback();
         return new Result<string>(null, e.message);
@@ -91,7 +92,7 @@ class AccountDao extends OracleDB implements IAccountDao {
 
   public async update(account: IAccountReq): Promise<Result<IAccount>> {
     const db = this.OpenDB();
-    if (!account.id) {
+    if (!account.ID) {
       return new Result<IAccount>(null) ;
     }
     
@@ -100,7 +101,7 @@ class AccountDao extends OracleDB implements IAccountDao {
       try {
         let result =  await db<IAccount>(this.tableName)
         .transacting(transaction)
-          .where("ID", account.id)
+          .where("ID", account.ID)
           .update(Helper.upcaseKey(account)).returning("*");
         transaction.commit();
         return new Result<IAccount>(result[1]) ;

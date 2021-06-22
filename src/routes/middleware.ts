@@ -14,7 +14,9 @@ const { UNAUTHORIZED } = StatusCodes;
 // Middleware to verify if user is an admin
 export const adminMW = async (req: Request, res: Response, next: NextFunction) => {
     try {
+        res.sessionUser = "coc";
         next();
+        
         // Get json-web-token
         // const jwt = req.signedCookies[cookieProps.key];
         // if (!jwt) {

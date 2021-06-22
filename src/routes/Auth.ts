@@ -44,8 +44,8 @@ export async function login(req: Request, res: Response) {
     }
     // Setup Admin Cookie
     const jwt = await jwtService.getJwt({
-        id: Number( user.data?.id),
-        role: Number(user.data?.username),
+        id: Number( user.data?.ID),
+        role: Number(user.data?.USERNAME),
     });
     const { key, options } = cookieProps;
     res.cookie(key, jwt, options);
