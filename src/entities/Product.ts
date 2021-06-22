@@ -1,47 +1,44 @@
+import { ProductReq } from "src/request/ProductReq";
+import { Helper } from "src/utils/Helper";
+
 export interface IProduct {
-    id?: string;
-    name?: string;
-    price?: number;
-    category?: string;
-    imgsrc?: string;
-    discount?: number;
-    description?: string;
-    sold ?: number
+    ID: string;
+    NAME: string;
+    PRICE: number;
+    CATEGORY: string;
+    IMGSRC: string;
+    DISCOUNT: number;
+    DESCRIPTION: string;
+    SOLD : number
   
   }
   
   export class Product implements IProduct {
-    public id?: string;
-    public name?: string;
-    public price?: number;
-    public category?: string;
-    public imgsrc?: string;
-    public discount?: number;
-    public description?: string;
-    public sold ?: number
+    public ID: string;
+    public NAME: string;
+    public PRICE: number;
+    public CATEGORY: string;
+    public IMGSRC: string;
+    public DISCOUNT: number;
+    public DESCRIPTION: string;
+    public SOLD : number
   
   
   
     constructor(
-     id: string,
-     name: string,
-     price: number,
-     category: string,
-     imgsrc: string,
-     discount: number,
-     description: string,
-     sold : number
+
+     productReq : ProductReq
     
     
     ) {
-        this.id = id;
-        this.name = name;
-        this.price = price;
-        this.category = category;
-        this.imgsrc = imgsrc;
-        this.discount = discount;
-        this.description = description;
-        this.sold  = sold
+        this.ID = Helper.generateUID();
+        this.NAME = productReq.NAME?productReq.NAME:"";
+        this.PRICE = productReq.PRICE?productReq.PRICE:0;
+        this.CATEGORY = productReq.CATEGORY?productReq.CATEGORY:"";
+        this.IMGSRC = productReq.IMGSRC?productReq.IMGSRC:"";
+        this.DISCOUNT = productReq.DISCOUNT?productReq.DISCOUNT:0;
+        this.DESCRIPTION = productReq.DESCRIPTION?productReq.DESCRIPTION:"";
+        this.SOLD  = productReq.SOLD?productReq.SOLD:0;
       }
   
   }
