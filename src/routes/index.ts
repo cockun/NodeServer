@@ -1,14 +1,17 @@
+/* eslint-disable max-len */
 import { Router } from 'express';
 import { adminMW } from './middleware';
 import { login, logout } from './Auth';
 import { getAllAccounts, addOneAccount, updateOneAccount, deleteOneAccount } from '../controllers/AccountController';
 import { getAllAccountInfos, updateOneAccountInfo } from 'src/controllers/AccountInfoController';
+import { getAllProducts, addOneProduct, updateOneProduct, deleteOneProduct } from '../controllers/ProductController';
 
 
 
 
 // Auth router
 const authRouter = Router();
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
 authRouter.post('/login', login);
 authRouter.get('/logout', logout);
 
@@ -16,10 +19,10 @@ authRouter.get('/logout', logout);
 // Product-router
 
 const productRouter = Router();
-productRouter.get('/all', getAllAccounts);
-productRouter.post('/add', addOneAccount);
-productRouter.put('/update', updateOneAccount);
-productRouter.delete('/delete/:id', deleteOneAccount);
+productRouter.get('/all', getAllProducts);
+productRouter.post('/add', addOneProduct);
+productRouter.put('/update', updateOneProduct);
+productRouter.delete('/delete/:id', deleteOneProduct);
 
 
 // Account-router 

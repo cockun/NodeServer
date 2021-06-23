@@ -74,7 +74,7 @@ export async function updateOneProduct(req: Request, res: Response) {
  * @param res 
  * @returns 
  */
-export async function deleteOneAccount(req: Request, res: Response) {
+export async function deleteOneProduct(req: Request, res: Response) {
     const { id } = req.params;
     await productDao.delete(id);
     return res.status(OK).end();
