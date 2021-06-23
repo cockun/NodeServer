@@ -1,15 +1,17 @@
+/* eslint-disable max-len */
 import { Router } from 'express';
 import { adminMW } from './middleware';
 import { login, logout } from './Auth';
 import { getAllAccounts, addOneAccount, updateOneAccount, deleteOneAccount } from '../controllers/AccountController';
 import { getAllAccountInfos, updateOneAccountInfo } from 'src/controllers/AccountInfoController';
-import { getAllProducts, getOne, addOneProduct, updateOneProduct,deleteOneProduct } from '../controllers/ProductController';
+import { getAllProducts, addOneProduct, updateOneProduct, deleteOneProduct } from '../controllers/ProductController';
 
 
 
 
 // Auth router
 const authRouter = Router();
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
 authRouter.post('/login', login);
 authRouter.get('/logout', logout);
 
