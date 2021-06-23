@@ -8,7 +8,7 @@ export interface IBill {
     username ?: string;  
   }
   export class Bill implements IBill {
-    public id?: string;
+    public id: string;
     public total ?: number;
     public dateBuy ?: string;  
     public fullname ?: string;
