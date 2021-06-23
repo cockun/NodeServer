@@ -8,8 +8,8 @@ class OracleDB {
       const knex2 = knex({
         client: "oracledb",
         connection: {
-          user: "web",
-          password: "coc",
+          user: "C##User",
+          password: "user",
           connectString:
             "localhost:1521/orcl",
           requestTimeout: 100,

@@ -7,7 +7,7 @@ export interface IProdctReq {
     IMGSRC?: string;
     DISCOUNT?: number;
     DESCRIPTION?: string;
-    SOLD? : number
+    SOLD? : number;
     
 }
 export class ProductReq implements IProdctReq {
@@ -22,5 +22,4 @@ export class ProductReq implements IProdctReq {
     public SOLD? : number
 
     
-
 }

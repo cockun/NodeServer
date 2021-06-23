@@ -5,7 +5,7 @@ import { login, logout } from './Auth';
 import { getAllAccounts, addOneAccount, updateOneAccount, deleteOneAccount } from '../controllers/AccountController';
 import { getAllAccountInfos, updateOneAccountInfo } from 'src/controllers/AccountInfoController';
 import { getAllProducts, addOneProduct, updateOneProduct, deleteOneProduct } from '../controllers/ProductController';
-
+import { getAllBills, getOne, addOneBill, updateOneBill, } from '../controllers/BillController';
 
 
 
@@ -37,6 +37,15 @@ accountRouter.delete('/delete/:id', deleteOneAccount);
 const accountInfoRouter = Router();
 accountInfoRouter.get('/all', getAllAccountInfos);
 accountInfoRouter.put('/update', updateOneAccountInfo);
+
+// Product-router
+
+const billRouter = Router();
+billRouter.get('/all', getAllBills);
+billRouter.post('/add', addOneBill);
+billRouter.put('/update', updateOneBill);
+billRouter.delete('/delete/:id', updateOneBill);
+
 
 // Export the base-router
 const baseRouter = Router();

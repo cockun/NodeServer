@@ -1,40 +1,41 @@
+import { BillReq } from "src/request/BillReq";
+import { Helper } from "src/utils/Helper";
+
 export interface IBill {
-    id: string;
-    total ?: number;
-    dateBuy ?: string;  
-    fullname ?: string;
-    phone ?: number;
-    address ?: string;
-    username ?: string;  
+    ID: string;
+    TOTAL ?: number;
+    DATEBUY ?: string;  
+    FULLNAME ?: string;
+    PHONE ?: string;
+    ADDRESS ?: string;
+    ACCOUNTID ?: string;
+    BILLSTATUS ?: string;    
   }
   export class Bill implements IBill {
-    public id: string;
-    public total ?: number;
-    public dateBuy ?: string;  
-    public fullname ?: string;
-    public phone ?: number;
-    public address ?: string;
-    public username ?: string;  
+    public ID: string;
+    public TOTAL ?: number;
+    public DATEBUY ?: string;  
+    public FULLNAME ?: string;
+    public PHONE ?: string;
+    public ADDRESS ?: string;
+    public ACCOUNTID ?: string;
+    public BILLSTATUS ?: string;  
   
+    
   
   
     constructor(
-        total : number,
-        dateBuy : string,
-        fullname : string,
-        phone : number,
-        address : string,
-        username : string,  
-    
+      billReq : BillReq
     
     ) {
-      this.id = '2';
-      this.total = total;
-      this.dateBuy= dateBuy;
-      this.fullname= fullname;
-      this.phone= phone;
-      this.address= address;
-      this.username= username;
-      }
+        this.ID = Helper.generateUID();
+        this.TOTAL = billReq.TOTAL?billReq.TOTAL:0;
+        this.DATEBUY = billReq.DATEBUY?billReq.DATEBUY:"";
+        this.FULLNAME = billReq.FULLNAME?billReq.FULLNAME:"";
+        this.PHONE = billReq.PHONE?billReq.PHONE:"";
+        this.ADDRESS = billReq.ADDRESS?billReq.ADDRESS:"";
+        this.ACCOUNTID = billReq.ACCOUNTID?billReq.ACCOUNTID:"";
+        this.BILLSTATUS = billReq.BILLSTATUS?billReq.BILLSTATUS:"";
+    }
   
   }
