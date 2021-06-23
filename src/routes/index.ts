@@ -3,6 +3,7 @@ import { adminMW } from './middleware';
 import { login, logout } from './Auth';
 import { getAllAccounts, addOneAccount, updateOneAccount, deleteOneAccount } from '../controllers/AccountController';
 import { getAllAccountInfos, updateOneAccountInfo } from 'src/controllers/AccountInfoController';
+import { getAllProducts, getOne, addOneProduct, updateOneProduct,deleteOneProduct } from '../controllers/ProductController';
 
 
 
@@ -16,10 +17,10 @@ authRouter.get('/logout', logout);
 // Product-router
 
 const productRouter = Router();
-productRouter.get('/all', getAllAccounts);
-productRouter.post('/add', addOneAccount);
-productRouter.put('/update', updateOneAccount);
-productRouter.delete('/delete/:id', deleteOneAccount);
+productRouter.get('/all', getAllProducts);
+productRouter.post('/add', addOneProduct);
+productRouter.put('/update', updateOneProduct);
+productRouter.delete('/delete/:id', deleteOneProduct);
 
 
 // Account-router 
