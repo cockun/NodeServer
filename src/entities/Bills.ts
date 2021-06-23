@@ -1,5 +1,5 @@
 export interface IBill {
-    id?: string;
+    id: string;
     total ?: number;
     dateBuy ?: string;  
     fullname ?: string;
