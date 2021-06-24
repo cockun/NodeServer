@@ -71,7 +71,7 @@ class AccountDao extends OracleDB implements IAccountDao {
         await db<Account>(this.tableName)
           .transacting(transaction)
           .insert(Helper.upcaseKey(account));
-        let result = await accountInfoDao.add(accountReq,transaction);  
+        const result = await accountInfoDao.add(accountReq,transaction);  
         if(result && result.data){
           transaction.commit();
           return new Result<string>(account.ID);
@@ -99,7 +99,7 @@ class AccountDao extends OracleDB implements IAccountDao {
     if (db) {
       const transaction = await db.transaction();
       try {
-        let result =  await db<IAccount>(this.tableName)
+        const result =  await db<IAccount>(this.tableName)
         .transacting(transaction)
           .where("ID", account.ID)
           .update(Helper.upcaseKey(account)).returning("*");

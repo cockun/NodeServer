@@ -44,8 +44,8 @@ export async function login(req: Request, res: Response) {
     }
     // Setup Admin Cookie
     const jwt = await jwtService.getJwt({
-        id: Number( user.data?.ID),
-        role: Number(user.data?.USERNAME),
+        id: Number( ""),
+        role: Number(""),
     });
     const { key, options } = cookieProps;
     res.cookie(key, jwt, options);
@@ -61,6 +61,7 @@ export async function login(req: Request, res: Response) {
  * @param res 
  * @returns 
  */
+// eslint-disable-next-line @typescript-eslint/require-await
 export async function logout(req: Request, res: Response) {
     const { key, options } = cookieProps;
     res.clearCookie(key, options);

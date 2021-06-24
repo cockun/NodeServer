@@ -3,7 +3,6 @@ import { Request, Response } from 'express';
 
 import ProductDao from '@daos/Product/ProductDao';
 import { paramMissingError } from '@shared/constants';
-    import { format } from 'morgan';
 const productDao = new ProductDao();
 
 const { BAD_REQUEST, CREATED, OK } = StatusCodes;
@@ -22,11 +21,18 @@ export async function getAllProducts(req: Request, res: Response) {
     return res.status(OK).json({products});
 }
 
-export async function getOne(req: Request, res: Response) {
-    const {accountname} = req.body;
-    const product = await productDao.getOne(accountname);
+export async function getById(req: Request, res: Response) {
+    const {ID} = req.body;
+    const product = await productDao.getById(ID);
     return res.status(OK).json({product});
 }
+
+export async function filler(req: Request, res: Response) {
+    const {data} = req.body;
+    const product = await productDao.filter(data);
+    return res.status(OK).json({product});
+}
+
 
 /**
  * Add one user.
@@ -36,13 +42,13 @@ export async function getOne(req: Request, res: Response) {
  * @returns 
  */
 export async function addOneProduct(req: Request, res: Response) {
-    const { product } = req.body;
-    if (!product) {
+    const { data } = req.body;
+    if (!data) {
         return res.status(BAD_REQUEST).json({
             error: paramMissingError,
         });
     }
-    await productDao.add(product);
+    await productDao.add(data);
     return res.status(CREATED).end();
 }
 
@@ -55,14 +61,14 @@ export async function addOneProduct(req: Request, res: Response) {
  * @returns 
  */
 export async function updateOneProduct(req: Request, res: Response) {
-    const { product } = req.body;
-    if (!product) {
+    const { data } = req.body;
+    if (!data) {
         return res.status(BAD_REQUEST).json({
             error: paramMissingError,
         });
     }
-    product.id = Number(product.id);
-    await productDao.update(product);
+  
+    await productDao.update(data);
     return res.status(OK).end();
 }
 

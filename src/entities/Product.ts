@@ -1,11 +1,12 @@
 import { ProductReq } from "src/request/ProductReq";
 import { Helper } from "src/utils/Helper";
+import { Category, ICategory } from "./Categories";
 
 export interface IProduct {
     ID: string;
     NAME: string;
     PRICE: number;
-    CATEGORY: string;
+    CATEGORYID: string;
     IMGSRC: string;
     DISCOUNT: number;
     DESCRIPTION: string;
@@ -17,7 +18,7 @@ export interface IProduct {
     public ID: string;
     public NAME: string;
     public PRICE: number;
-    public CATEGORY: string;
+    public CATEGORYID: string;
     public IMGSRC: string;
     public DISCOUNT: number;
     public DESCRIPTION: string;
@@ -34,7 +35,12 @@ export interface IProduct {
         this.ID = Helper.generateUID();
         this.NAME = productReq.NAME?productReq.NAME:"";
         this.PRICE = productReq.PRICE?productReq.PRICE:0;
-        this.CATEGORY = productReq.CATEGORY?productReq.CATEGORY:"";
+        if( productReq.CATEGORY?.ID){
+          this.CATEGORYID = productReq.CATEGORY?.ID;
+        }else{
+          this.CATEGORYID= ""
+        }
+      
         this.IMGSRC = productReq.IMGSRC?productReq.IMGSRC:"";
         this.DISCOUNT = productReq.DISCOUNT?productReq.DISCOUNT:0;
         this.DESCRIPTION = productReq.DESCRIPTION?productReq.DESCRIPTION:"";

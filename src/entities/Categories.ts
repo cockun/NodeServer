@@ -1,11 +1,13 @@
+import { Helper } from "../utils/Helper";
+
 export interface ICategory {
-    id?: string;
-    CategoryName   ?: string;
+    ID: string;
+    CATEGORYNAME : string;
     
   }
   export class Category implements ICategory{
-    public id?: string;
-    public CategoryName   ?: string;
+    public ID: string;
+    public CATEGORYNAME : string;
   
   
     constructor(
@@ -14,8 +16,8 @@ export interface ICategory {
     
     
     ) {
-      this.id = '2';
-      this.CategoryName = CategoryName;
+      this.ID = Helper.generateUID(); 
+      this.CATEGORYNAME = CategoryName;
       
       }
   

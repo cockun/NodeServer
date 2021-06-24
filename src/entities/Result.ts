@@ -3,7 +3,7 @@ import { isBuffer } from "util";
 
 export class Result<T> {
   public err?: string | null;
-  public data: T | null;
+  public data: T | null ;
 
   constructor(data: T | undefined | null, err?: string | undefined) {
     this.err = err;
