@@ -67,4 +67,5 @@ baseRouter.use("/auth", authRouter);
 baseRouter.use("/accounts", adminMW, accountRouter);
 baseRouter.use("/products", productRouter);
 baseRouter.use("/accountinfos", accountInfoRouter);
+baseRouter.use("/bills",billRouter)
 export default baseRouter;

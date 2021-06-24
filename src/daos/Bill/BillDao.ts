@@ -45,7 +45,7 @@ class BillDao extends OracleDB implements IBillDao {
     return undefined;
   }
 
-  public async getAll(): Promise<Result<IBill[]>| undefined> {
+  public async getAll(): Promise<Result<IBill[]>> {
     const db = this.OpenDB();
     if (db) {
       const result = await db<Bill>(this.tableName)
@@ -53,12 +53,12 @@ class BillDao extends OracleDB implements IBillDao {
       
         return new Result<IBill[]> (result);
     }
-    return undefined;
+    return new Result<IBill[]> ([],"Connect Oracle Error");
   }
 
   public async  add(billReq: IBillReq): Promise<Result<string>> {
     const db = this.OpenDB();
-    let bill = new Bill(billReq);
+    const bill = new Bill(billReq);
  
     if (db) {
       const transaction = await db.transaction();
@@ -92,7 +92,7 @@ class BillDao extends OracleDB implements IBillDao {
     if (db) {
       const transaction = await db.transaction();
       try {
-        let result =  await db<IBill>(this.tableName)
+        const result =  await db<IBill>(this.tableName)
         .transacting(transaction)
           .where("ID", bill.ID)
           .update(Helper.upcaseKey(bill)).returning("*");
@@ -112,7 +112,7 @@ class BillDao extends OracleDB implements IBillDao {
     if (db) {
       const transaction = await db.transaction();
       try {
-        const ressult = await db(this.tableName)
+          await db(this.tableName)
           .where("ID", id)
           .del();
         transaction.commit();
