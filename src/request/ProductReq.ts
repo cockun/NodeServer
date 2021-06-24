@@ -32,5 +32,4 @@ export class ProductReq implements IProdctReq {
     public ORDERBYNAME?:string;
 
     
-
 }
