@@ -36,6 +36,8 @@ export async function getOne(req: Request, res: Response) {
     return res.status(OK).json({accounts});
 }
 
+
+
 /**
  * Add one user.
  * 

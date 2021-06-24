@@ -62,20 +62,20 @@ class AccountDao extends OracleDB implements IAccountInfoDao {
     transaction: Knex.Transaction<any, any[]>
   ): Promise<Result<number>> {
     const db = this.OpenDB();
-    let accountInfo = new AccountInfo(accountReq);
+    const accountInfo = new AccountInfo(accountReq);
     if (db) {
       try {
-        let roleDao = new RoleDao();
-        let tmp = await roleDao.getOneByName(
+        const roleDao = new RoleDao();
+        const tmp = await roleDao.getOneByName(
           accountReq.ROLE ? accountReq.ROLE : "User"
         );
         if (tmp && tmp.data) {
-          accountInfo.ROLEID = tmp.data.ID;
+          accountInfo.ROLEID = tmp.data.ROLENAME;
         } else {
           return new Result<number>(null, "get RoldId null");
         }
 
-        let result = await db<AccountInfo>(this.tableName)
+        const result = await db<AccountInfo>(this.tableName)
           .transacting(transaction)
           .insert(Helper.upcaseKey(accountInfo));
         return new Result<number>(result as unknown as number);
