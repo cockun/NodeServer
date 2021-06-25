@@ -35,7 +35,6 @@ authRouter.get("/logout", logout);
 // Product-router
 
 const productRouter = Router();
-productRouter.get("/all", getAllProducts);
 productRouter.post("/add", addOneProduct);
 productRouter.put("/update", updateOneProduct);
 productRouter.delete("/delete/:id", deleteOneProduct);
@@ -60,6 +59,11 @@ billRouter.get("/all", getAllBills);
 billRouter.post("/add", addOneBill);
 billRouter.put("/update", updateOneBill);
 billRouter.delete("/delete/:id", updateOneBill);
+
+
+
+
+
 
 // Export the base-router
 const baseRouter = Router();

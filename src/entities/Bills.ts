@@ -3,23 +3,23 @@ import { Helper } from "src/utils/Helper";
 
 export interface IBill {
     ID: string;
-    TOTAL ?: number;
-    DATEBUY ?: string;  
-    FULLNAME ?: string;
-    PHONE ?: string;
-    ADDRESS ?: string;
-    ACCOUNTID ?: string;
-    BILLSTATUS ?: string;    
+    TOTAL : number;
+    DATEBUY : string;  
+    FULLNAME : string;
+    PHONE : string;
+    ADDRESS : string;
+    ACCOUNTID : string;
+    BILLSTATUS : string;    
   }
   export class Bill implements IBill {
     public ID: string;
-    public TOTAL ?: number;
-    public DATEBUY ?: string;  
-    public FULLNAME ?: string;
-    public PHONE ?: string;
-    public ADDRESS ?: string;
-    public ACCOUNTID ?: string;
-    public BILLSTATUS ?: string;  
+    public TOTAL : number;
+    public DATEBUY : string;  
+    public FULLNAME : string;
+    public PHONE : string;
+    public ADDRESS : string;
+    public ACCOUNTID : string;
+    public BILLSTATUS : string;  
   
     
   
