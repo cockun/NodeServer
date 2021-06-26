@@ -39,7 +39,7 @@ export interface IProduct {
           this.CATEGORYID = productReq.CATEGORY?.ID;
         }else{
           this.CATEGORYID= ""
-        }
+        } 
       
         this.IMGSRC = productReq.IMGSRC?productReq.IMGSRC:"";
         this.DISCOUNT = productReq.DISCOUNT?productReq.DISCOUNT:0;
