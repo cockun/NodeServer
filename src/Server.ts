@@ -1,6 +1,5 @@
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
-import path from 'path';
 import helmet from 'helmet';
 import StatusCodes from 'http-status-codes';
 import express, { NextFunction, Request, Response } from 'express';
@@ -13,6 +12,7 @@ import { cookieProps } from '@shared/constants';
 
 import * as swagger from "swagger-express-ts";
 import { SwaggerDefinitionConstant } from "swagger-express-ts";
+import cors from 'cors';
 
 const app = express();
 
@@ -24,10 +24,15 @@ const { BAD_REQUEST } = StatusCodes;
  *                              Set basic express settings
  ***********************************************************************************/
 
+ const allowedOrigins = ['http://localhost:3000'];
+
+ const options: cors.CorsOptions = {
+   origin: allowedOrigins
+ };
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(cookieParser(cookieProps.secret));
-
+app.use(cors(options))
 // Show routes called in console during development
 if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'));
