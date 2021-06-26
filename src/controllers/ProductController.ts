@@ -48,8 +48,8 @@ export async function addOneProduct(req: Request, res: Response) {
             error: paramMissingError,
         });
     }
-    await productDao.add(data);
-    return res.status(CREATED).end();
+    const ID = await productDao.add(data);
+    return res.status(OK).json({ID});   
 }
 
 

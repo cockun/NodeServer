@@ -10,13 +10,6 @@ const { BAD_REQUEST, CREATED, OK } = StatusCodes;
 
 
 
-/**
- * Get all Accounts.
- * 
- * @param req 
- * @param res 
- * @returns 
- */
 export async function getAllAccounts(req: Request, res: Response) {
     const accounts = await accountDao.getAll();
 

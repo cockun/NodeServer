@@ -142,7 +142,6 @@ class ProductDao extends OracleDB implements IProductDao {
           .transacting(transaction)
           .insert(Helper.upcaseKey(product));
         transaction.commit();
-        transaction.rollback();
         return new Result<string>(product.ID);
       } catch (e) {
         transaction.rollback();
