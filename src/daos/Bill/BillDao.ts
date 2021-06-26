@@ -15,17 +15,10 @@ import BillInfoDao from "./BillInfoDao";
 import { BillRes } from "../../response/BillRes";
 
 export interface IBillDao {
-<<<<<<< HEAD
-  getOne: (data: IAccountReq) => Promise<Result<IBill> | undefined>;
-  getAll: () => Promise<Result<IBill[]>  | undefined>;
-  add: (bill: IAccountReq) => Promise<Result<string>>;
-  update: (bill: IAccountReq) => Promise<Result<IBill>>;
-=======
   getOneById: (id: string) => Promise<Result<IBill>>;
   getAll: () => Promise<Result<IBill[]> | undefined>;
   add: (bill: IBillReq) => Promise<Result<string>>;
   update: (bill: IBillReq) => Promise<Result<IBill>>;
->>>>>>> 0f9517513629c4dc6df701fca6e455600ce565a4
   delete: (id: string) => Promise<void>;
   filter: (billReq: IBillReq) => Promise<Result<BillRes[]>>;
 }
@@ -33,11 +26,7 @@ export interface IBillDao {
 class BillDao extends OracleDB implements IBillDao {
   public tableName = "BILLS";
 
-<<<<<<< HEAD
-  public async getOne(data: IAccountReq): Promise<Result<IBill>  | undefined> {
-=======
   public async getOneById(id: string): Promise<Result<IBill>> {
->>>>>>> 0f9517513629c4dc6df701fca6e455600ce565a4
     const db = this.OpenDB();
     if (db) {
       const result = await db<Bill>(this.tableName)
