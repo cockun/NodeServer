@@ -51,7 +51,7 @@ export async function addOneAccount(req: Request, res: Response) {
             error: paramMissingError,
         });
     }
-    let id =  await accountDao.add(data);
+    const id =  await accountDao.add(data);
     return res.status(CREATED).json(id);
 }
 
