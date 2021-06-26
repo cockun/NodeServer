@@ -9,72 +9,156 @@ import { IBill, Bill } from "@entities/Bills";
 import { callbackify } from "util";
 import { IProdctReq } from "src/request/ProductReq";
 import { IBillReq } from "src/request/BillReq";
+import ProductDao from "../Product/ProductDao";
+import { Billinfo } from "../../entities/Billinfo";
+import BillInfoDao from "./BillInfoDao";
+import { BillRes } from "../../response/BillRes";
 
 export interface IBillDao {
+<<<<<<< HEAD
   getOne: (data: IAccountReq) => Promise<Result<IBill> | undefined>;
   getAll: () => Promise<Result<IBill[]>  | undefined>;
   add: (bill: IAccountReq) => Promise<Result<string>>;
   update: (bill: IAccountReq) => Promise<Result<IBill>>;
+=======
+  getOneById: (id: string) => Promise<Result<IBill>>;
+  getAll: () => Promise<Result<IBill[]> | undefined>;
+  add: (bill: IBillReq) => Promise<Result<string>>;
+  update: (bill: IBillReq) => Promise<Result<IBill>>;
+>>>>>>> 0f9517513629c4dc6df701fca6e455600ce565a4
   delete: (id: string) => Promise<void>;
+  filter: (billReq: IBillReq) => Promise<Result<BillRes[]>>;
 }
 
 class BillDao extends OracleDB implements IBillDao {
   public tableName = "BILLS";
 
+<<<<<<< HEAD
   public async getOne(data: IAccountReq): Promise<Result<IBill>  | undefined> {
-    const db = this.OpenDB();
-    if (db) {
-      const result = await db<Bill>(this.tableName)
-        .select("*")
-        .where(Helper.upcaseKey(data))
-        .first();
-      return new Result<IBill> (result);
-    }
-    return undefined;
-  }
-
-  public async getOneById(id: string): Promise<Result<IBill> | undefined> {
+=======
+  public async getOneById(id: string): Promise<Result<IBill>> {
+>>>>>>> 0f9517513629c4dc6df701fca6e455600ce565a4
     const db = this.OpenDB();
     if (db) {
       const result = await db<Bill>(this.tableName)
         .select("*")
         .where("ID", id)
         .first();
-        return new Result<IBill> (result);
+      return new Result<IBill>(result);
     }
-    return undefined;
+    return new Result<IBill>(null);
   }
 
   public async getAll(): Promise<Result<IBill[]>> {
     const db = this.OpenDB();
     if (db) {
-      const result = await db<Bill>(this.tableName)
-        .select("*")
-      
-        return new Result<IBill[]> (result);
+      const result = await db<Bill>(this.tableName).select("*");
+
+      return new Result<IBill[]>(result);
     }
-    return new Result<IBill[]> ([],"Connect Oracle Error");
+    return new Result<IBill[]>([], "Connect Oracle Error");
   }
 
-  public async  add(billReq: IBillReq): Promise<Result<string>> {
+  public async filter(
+    billReq: IBillReq
+  ): Promise<Result<BillRes[]>> {
+    const db = this.OpenDB();
+
+    if (!billReq.PAGEINDEX) {
+      billReq.PAGEINDEX = 1;
+    }
+    if (!billReq.PAGESIZE) {
+      billReq.PAGESIZE = 20;
+    }
+
+    if (db) {
+      const tmp = db<BillRes>(this.tableName).select("*");
+
+      if (billReq.ACCOUNTID) {
+        tmp.where("ACCOUNTID", billReq.ACCOUNTID);
+      }
+
+      if (billReq.FROMDATE && billReq.TODATE) {
+        tmp
+          .where("DATEBUY", "<", billReq.TODATE)
+          .where("DATEBUY", ">", billReq.FROMDATE);
+      }
+
+      if (billReq.ORDERBYNAME) {
+        if (billReq.ORDERBYASC) {
+          tmp.orderBy([
+            {
+              column: billReq.ORDERBYNAME,
+              order: billReq.ORDERBYASC ? "asc" : "desc",
+            },
+          ]);
+        } else {
+          tmp.orderBy([{ column: billReq.ORDERBYNAME, order: "asc" }]);
+        }
+      }
+      tmp
+        .limit(billReq.PAGESIZE)
+        .offset((billReq.PAGEINDEX - 1) * billReq.PAGESIZE);
+      const bill = await tmp;
+      const billInfoDao = new BillInfoDao();
+      if(bill){
+        bill.map(async p=>{
+          const tmp = (await billInfoDao.getByIdBill(p.ID)).data;
+          if(tmp){
+            p.BILLINFOS = tmp;
+          }else
+          {
+            p.BILLINFOS = [];
+          }
+         
+        })
+      }
+
+      return new Result<BillRes[]>(bill);
+    }
+    return new Result<BillRes[]>([], "");
+  }
+
+  public async add(billReq: IBillReq): Promise<Result<string>> {
     const db = this.OpenDB();
     const bill = new Bill(billReq);
- 
+    const productDao = new ProductDao();
+    const billInfos: Billinfo[] = [];
+
+    if (billReq.BILLINFOS) {
+      for (let i = 0; i < billReq.BILLINFOS.length; ++i) {
+        const product = await productDao.getById(
+          billReq.BILLINFOS[i].PRODUCTID
+        );
+        if (!product.data) {
+          return new Result<string>(null, "Mã sản phẩm sai");
+        }
+        const billinfo = new Billinfo(
+          bill.ID,
+          product.data.ID,
+          billReq.BILLINFOS[i].QUANTITY,
+          product.data.DISCOUNT
+        );
+        billInfos.push(billinfo);
+      }
+    }
+
     if (db) {
       const transaction = await db.transaction();
       try {
         await db<Bill>(this.tableName)
           .transacting(transaction)
           .insert(Helper.upcaseKey(bill));
-        
-       
-          transaction.commit();
-        
-          transaction.rollback();
-          return new Result<string>(bill.ID);
 
-      
-        
+        const billInfoDao = new BillInfoDao();
+        const tmp = await billInfoDao.add(billInfos, transaction);
+        if (tmp && tmp.data) {
+          transaction.commit();
+          return new Result<string>(bill.ID);
+        } else {
+          transaction.rollback();
+          return new Result<string>(null, "Lỗi");
+        }
       } catch (e) {
         transaction.rollback();
         return new Result<string>(null, e.message);
@@ -86,21 +170,22 @@ class BillDao extends OracleDB implements IBillDao {
   public async update(bill: IAccountReq): Promise<Result<IBill>> {
     const db = this.OpenDB();
     if (!bill.ID) {
-      return new Result<IBill>(null) ;
+      return new Result<IBill>(null);
     }
-    
+
     if (db) {
       const transaction = await db.transaction();
       try {
-        const result =  await db<IBill>(this.tableName)
-        .transacting(transaction)
+        const result = await db<IBill>(this.tableName)
+          .transacting(transaction)
           .where("ID", bill.ID)
-          .update(Helper.upcaseKey(bill)).returning("*");
+          .update(Helper.upcaseKey(bill))
+          .returning("*");
         transaction.commit();
-        return new Result<IBill>(result[1]) ;
+        return new Result<IBill>(result[1]);
       } catch (e) {
         transaction.rollback();
-        return new Result<IBill>(null) ;
+        return new Result<IBill>(null);
       }
     }
     return new Result<IBill>(null, "connect oracle err");
@@ -112,9 +197,7 @@ class BillDao extends OracleDB implements IBillDao {
     if (db) {
       const transaction = await db.transaction();
       try {
-          await db(this.tableName)
-          .where("ID", id)
-          .del();
+        await db(this.tableName).where("ID", id).del();
         transaction.commit();
       } catch (e) {
         transaction.rollback();

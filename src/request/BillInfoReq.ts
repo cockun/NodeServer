@@ -29,7 +29,7 @@ export interface IBillinfo {
       this.BILLID = BillID;
       this.PRODUCTID= ProductID;
       this.QUANTITY= Quantity;
-      this.PRICE= Price;
+    
     
       }
   

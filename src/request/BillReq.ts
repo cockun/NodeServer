@@ -10,11 +10,13 @@ export interface IBillReq {
     ADDRESS?: string;
     ACCOUNTID?: string;
     BILLSTATUS? : string
-    BILLINFO? : Billinfo[]
+    BILLINFOS? : Billinfo[]
     PAGEINDEX?:number;
     PAGESIZE?:number;
     ORDERBYASC?: boolean;
     ORDERBYNAME?:string;
+    FROMDATE? :Date;
+    TODATE?:Date;
 }
 export class BillReq implements IBillReq {
 
@@ -26,11 +28,13 @@ export class BillReq implements IBillReq {
     public ADDRESS?: string;
     public ACCOUNTID?: string;
     public BILLSTATUS? : string;
-    public BILLINFO? : Billinfo[]
+    public BILLINFOS? : Billinfo[]
     public PAGEINDEX?:number;
     public PAGESIZE?:number;
     public ORDERBYASC?: boolean;
     public ORDERBYNAME?:string;
+    public FROMDATE? :Date;
+    public TODATE?:Date;
 
     
   

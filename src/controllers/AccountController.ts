@@ -10,13 +10,6 @@ const { BAD_REQUEST, CREATED, OK } = StatusCodes;
 
 
 
-/**
- * Get all Accounts.
- * 
- * @param req 
- * @param res 
- * @returns 
- */
 export async function getAllAccounts(req: Request, res: Response) {
     const accounts = await accountDao.getAll();
 
@@ -51,7 +44,7 @@ export async function addOneAccount(req: Request, res: Response) {
             error: paramMissingError,
         });
     }
-    let id =  await accountDao.add(data);
+    const id =  await accountDao.add(data);
     return res.status(CREATED).json(id);
 }
 

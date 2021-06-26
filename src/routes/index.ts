@@ -21,7 +21,6 @@ import {
 } from "../controllers/ProductController";
 import {
   getAllBills,
-  getOne,
   addOneBill,
   updateOneBill,
 } from "../controllers/BillController";

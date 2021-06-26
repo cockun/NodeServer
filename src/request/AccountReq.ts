@@ -28,16 +28,6 @@ export class AccountReq implements IAccountReq {
 
 
 
-  constructor(
-    USERNAME: string,
-    PASSWORD: string,
-   
-  
-  
-  ) {
-    this.ID = Helper.generateUID();
-    this.USERNAME = USERNAME;
-    this.PASSWORD= PASSWORD;
-    }
+
 
 }

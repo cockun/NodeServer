@@ -32,6 +32,61 @@ class AccountDao extends OracleDB implements IAccountDao {
     return undefined;
   }
 
+  // public async filter(
+  //   productReq: IProdctReq
+  // ): Promise<Result<IProductRes[]> | undefined> {
+  //   const db = this.OpenDB();
+
+  //   if (!productReq.PAGEINDEX) {
+  //     productReq.PAGEINDEX = 1;
+  //   }
+  //   if (!productReq.PAGESIZE) {
+  //     productReq.PAGESIZE = 20;
+  //   }
+
+  //   if (db) {
+  //     const tmp = db<IProduct>(this.tableName).select("*");
+
+  //     if (productReq.NAME) {
+  //       tmp.where("NAME", "like", `%@${productReq.NAME}%`);
+  //     }
+
+  //     if (productReq.ORDERBYNAME) {
+  //       if (productReq.ORDERBYASC) {
+  //         tmp.orderBy([
+  //           {
+  //             column: productReq.ORDERBYNAME,
+  //             order: productReq.ORDERBYASC ? "asc" : "desc",
+  //           },
+  //         ]);
+  //       } else {
+  //         tmp.orderBy([{ column: productReq.ORDERBYNAME, order: "asc" }]);
+  //       }
+  //     }
+  //     tmp
+  //       .limit(productReq.PAGESIZE)
+  //       .offset((productReq.PAGEINDEX - 1) * productReq.PAGESIZE);
+  //     const result = await tmp;
+  //     const categoryIds = [...new Set(result.map((p) => p.CATEGORYID))];
+  //     const categoryDao = new CategoryDao();
+  //     const categories = await categoryDao.getManyByIds(categoryIds);
+
+  //     const productRes = result.map((p) => {
+  //       const category = categories.data?.find((z) => z.ID === p.CATEGORYID);
+  //       if (category) {
+  //         return new ProductRes(p, category);
+  //       } else {
+  //         return new ProductRes(p, {} as ICategory);
+  //       }
+  //     });
+
+  //     return new Result<IProductRes[]>(productRes);
+  //   }
+  //   return new Result<IProductRes[]>([], "");
+  // }
+
+
+
   public async getOneById(id: string): Promise<Result<IAccount> | undefined> {
     const db = this.OpenDB();
     if (db) {

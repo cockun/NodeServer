@@ -1,3 +1,5 @@
+import { Helper } from "../utils/Helper";
+
 export interface IBillinfo {
     ID: string;
     BILLID  : string;
@@ -25,7 +27,7 @@ export interface IBillinfo {
     
     
     ) {
-      this.ID = '2';
+      this.ID = Helper.generateUID();
       this.BILLID = BillID;
       this.PRODUCTID= ProductID;
       this.QUANTITY= Quantity;

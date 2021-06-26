@@ -24,11 +24,17 @@ export async function getAllBills(req: Request, res: Response) {
     return res.status(OK).json({bills});
 }
 
-export async function getOne(req: Request, res: Response) {
-    const {billname} = req.body;
-    const bill = await billDao.getOne(billname);
-    return res.status(OK).json({bill});
+export async function filter(req: Request, res: Response) {
+    const { data } = req.body;
+    if (!data) {
+        return res.status(BAD_REQUEST).json({
+            error: paramMissingError,
+        });
+    }
+    await billDao.filter(data);
+    return res.status(CREATED).end();
 }
+
 
 /**
  * Add one user.
@@ -38,13 +44,13 @@ export async function getOne(req: Request, res: Response) {
  * @returns 
  */
 export async function addOneBill(req: Request, res: Response) {
-    const { bill } = req.body;
-    if (!bill) {
+    const { data } = req.body;
+    if (!data) {
         return res.status(BAD_REQUEST).json({
             error: paramMissingError,
         });
     }
-    await billDao.add(bill);
+    await billDao.add(data);
     return res.status(CREATED).end();
 }
 
@@ -57,14 +63,14 @@ export async function addOneBill(req: Request, res: Response) {
  * @returns 
  */
 export async function updateOneBill(req: Request, res: Response) {
-    const { bill } = req.body;
-    if (!bill) {
+    const { data } = req.body;
+    if (!data) {
         return res.status(BAD_REQUEST).json({
             error: paramMissingError,
         });
     }
-    bill.id = Number(bill.id);
-    await billDao.update(bill);
+    data.id = Number(data.id);
+    await billDao.update(data);
     return res.status(OK).end();
 }
 
