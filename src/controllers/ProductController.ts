@@ -49,7 +49,7 @@ export async function addOneProduct(req: Request, res: Response) {
         });
     }
     const ID = await productDao.add(data);
-    return res.status(OK).json({ID});   
+    return res.status(OK).json(ID);   
 }
 
 

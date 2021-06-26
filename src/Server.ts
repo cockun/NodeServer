@@ -24,7 +24,7 @@ const { BAD_REQUEST } = StatusCodes;
  *                              Set basic express settings
  ***********************************************************************************/
 
- const allowedOrigins = ['http://localhost:3000'];
+ const allowedOrigins = ['*'];
 
  const options: cors.CorsOptions = {
    origin: allowedOrigins
