@@ -22,7 +22,8 @@ export interface IProduct {
     public IMGSRC: string;
     public DISCOUNT: number;
     public DESCRIPTION: string;
-    public SOLD : number
+    public SOLD : number;
+    public CREATEDATE : Date; 
   
   
   
@@ -32,6 +33,7 @@ export interface IProduct {
     
     
     ) {
+    
         this.ID = Helper.generateUID();
         this.NAME = productReq.NAME?productReq.NAME:"";
         this.PRICE = productReq.PRICE?productReq.PRICE:0;
@@ -44,7 +46,8 @@ export interface IProduct {
         this.IMGSRC = productReq.IMGSRC?productReq.IMGSRC:"";
         this.DISCOUNT = productReq.DISCOUNT?productReq.DISCOUNT:0;
         this.DESCRIPTION = productReq.DESCRIPTION?productReq.DESCRIPTION:"";
-        this.SOLD  = productReq.SOLD?productReq.SOLD:0;
+        this.SOLD  =0;
+        this.CREATEDATE = new Date(Date.now());
       }
   
   }

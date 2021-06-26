@@ -9,7 +9,6 @@ export interface IProdctReq {
     IMGSRC?: string;
     DISCOUNT?: number;
     DESCRIPTION?: string;
-    SOLD? : number;
     PAGEINDEX?:number;
     PAGESIZE?:number;
     ORDERBYASC?: boolean;
@@ -25,7 +24,6 @@ export class ProductReq implements IProdctReq {
     public IMGSRC?: string;
     public DISCOUNT?: number;
     public DESCRIPTION?: string;
-    public SOLD? : number;
     public PAGEINDEX?:number;
     public PAGESIZE?:number;
     public ORDERBYASC?: boolean;
