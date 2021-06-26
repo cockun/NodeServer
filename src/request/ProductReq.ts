@@ -5,7 +5,7 @@ export interface IProdctReq {
     ID?: string;
     NAME?: string;
     PRICE?: number;
-    CATEGORY?: string;
+    CATEGORY?: ICategory;
     IMGSRC?: string;
     DISCOUNT?: number;
     DESCRIPTION?: string;
@@ -21,7 +21,7 @@ export class ProductReq implements IProdctReq {
     public ID?: string;
     public NAME?: string;
     public PRICE?: number;
-    public CATEGORY?: string;
+    public CATEGORY?: ICategory;
     public IMGSRC?: string;
     public DISCOUNT?: number;
     public DESCRIPTION?: string;
