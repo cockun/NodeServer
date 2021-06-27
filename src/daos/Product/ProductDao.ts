@@ -7,10 +7,8 @@ import { IProdctReq } from "src/request/ProductReq";
 import { ICategory } from "../../entities/Categories";
 import { IProductRes, ProductRes } from "../../response/ProductRes";
 import CategoryDao from "../Categories.ts/CategoryDao";
-import { isBuffer } from "util";
 
 export interface IProductDao {
-  getOne: (data: IProdctReq) => Promise<Result<IProductRes> | undefined>;
   getAll: () => Promise<Result<IProductRes[]> | undefined>;
   add: (product: IProdctReq) => Promise<Result<string>>;
   update: (product: IProdctReq) => Promise<Result<IProductRes>>;
@@ -20,29 +18,7 @@ export interface IProductDao {
 class ProductDao extends OracleDB implements IProductDao {
   public tableName = "PRODUCTS";
 
-  public async getOne(data: IProdctReq): Promise<Result<IProductRes>> {
-    const db = this.OpenDB();
-    if (db) {
-      let productRes: ProductRes;
-      const result = await db<Product>(this.tableName)
-        .select("*")
-        .where(Helper.upcaseKey(data))
-        .first();
-      if (result?.CATEGORYID) {
-        const category = await db<ICategory>("CATEGORTES")
-          .select("*")
-          .where(result.CATEGORYID)
-          .first();
-        if (category) {
-          productRes = new ProductRes(result, category);
-          return new Result<IProductRes>(productRes);
-        }
-      }
 
-      return new Result<IProductRes>(null, "Lỗi");
-    }
-    return new Result<IProductRes>(null, "Lỗi");
-  }
 
   public async getById(id: string): Promise<Result<IProductRes>> {
     const db = this.OpenDB();
@@ -53,9 +29,9 @@ class ProductDao extends OracleDB implements IProductDao {
         .where("ID", id)
         .first();
       if (result?.CATEGORYID) {
-        const category = await db<ICategory>("CATEGORTES")
+        const category = await db<ICategory>("CATEGORIES")
           .select("*")
-          .where(result.CATEGORYID)
+          .where("ID" ,  result.CATEGORYID)
           .first();
         if (category) {
           productRes = new ProductRes(result, category);
@@ -63,7 +39,7 @@ class ProductDao extends OracleDB implements IProductDao {
         }
       }
 
-      return new Result<IProductRes>(null, "Lỗi");
+      return new Result<IProductRes>(null);
     }
     return new Result<IProductRes>(null, "Lỗi");
   }
