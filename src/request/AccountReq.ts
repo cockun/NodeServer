@@ -8,7 +8,10 @@ export interface IAccountReq {
   ADDRESS?:string;
   PHONE?:string;
   ROLE?:string;
-  
+  PAGEINDEX?:number;
+  PAGESIZE?:number;
+  ORDERBYASC?: boolean;
+  ORDERBYNAME?:string;
   
   
 
@@ -24,9 +27,12 @@ export class AccountReq implements IAccountReq {
   public ADDRESS?:string;
   public PHONE?:string;
   public ROLE?:string;
+  public PAGEINDEX?:number;
+  public PAGESIZE?:number;
+  public ORDERBYASC?: boolean;
+  public ORDERBYNAME?:string;
+
   
-
-
 
 
 
