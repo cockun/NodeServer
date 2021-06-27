@@ -126,7 +126,7 @@ class CategoryDao extends OracleDB implements ICategoryDao {
     if (db) {
       const transaction = await db.transaction();
       try {
-        const ressult = await db(this.tableName).where("ID", id).del();
+        await db(this.tableName).where("ID", id).del();
         transaction.commit();
       } catch (e) {
         transaction.rollback();
