@@ -22,7 +22,7 @@ export async function getAllProducts(req: Request, res: Response) {
 }
 
 export async function getById(req: Request, res: Response) {
-    const {ID} = req.body;
+    const {ID} = req.params;
     const product = await productDao.getById(ID);
     return res.status(OK).json(product);
 }
