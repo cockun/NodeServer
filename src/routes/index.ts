@@ -39,7 +39,7 @@ productRouter.post("/add", addOneProduct);
 productRouter.put("/update", updateOneProduct);
 productRouter.delete("/delete/:id", deleteOneProduct);
 productRouter.get("/filter", filler);
-productRouter.get("/getid", getById);
+productRouter.get("/getid/:ID", getById);
 
 // Account-router
 const accountRouter = Router();

@@ -18,19 +18,19 @@ const { BAD_REQUEST, CREATED, OK } = StatusCodes;
  */
 export async function getAllProducts(req: Request, res: Response) {
     const products = await productDao.getAll();
-    return res.status(OK).json({products});
+    return res.status(OK).json(products);
 }
 
 export async function getById(req: Request, res: Response) {
-    const {ID} = req.body;
+    const {ID} = req.params;
     const product = await productDao.getById(ID);
-    return res.status(OK).json({product});
+    return res.status(OK).json(product);
 }
 
 export async function filler(req: Request, res: Response) {
     const {data} = req.body;
     const product = await productDao.filter(data);
-    return res.status(OK).json({product});
+    return res.status(OK).json(product);
 }
 
 
