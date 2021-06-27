@@ -16,10 +16,17 @@ export async function getAllAccounts(req: Request, res: Response) {
     return res.status(OK).json({accounts});
 }
 
+export async function filter(req: Request, res: Response) {
+    const {data} = req.body;
+    const accounts = await accountDao.filter(data);
+    return res.status(OK).json(accounts);
+}
+
+
 export async function getOneById(req: Request, res: Response) {
     const {data} = req.body;
     const accounts = await accountDao.getOneById(data.id);
-    return res.status(OK).json({accounts});
+    return res.status(OK).json(accounts);
 }
 
 
@@ -27,7 +34,7 @@ export async function getOneById(req: Request, res: Response) {
 export async function getOne(req: Request, res: Response) {
     const {data} = req.body;
     const accounts = await accountDao.getOne(data);
-    return res.status(OK).json({accounts});
+    return res.status(OK).json(accounts);
 }
 
 /**

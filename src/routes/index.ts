@@ -7,13 +7,13 @@ import {
   addOneAccount,
   updateOneAccount,
   deleteOneAccount,
+  filter
 } from "../controllers/AccountController";
 import {
   getAllAccountInfos,
   updateOneAccountInfo,
 } from "src/controllers/AccountInfoController";
 import {
-  getAllProducts,
   addOneProduct,
   updateOneProduct,
   deleteOneProduct,
@@ -39,11 +39,11 @@ productRouter.post("/add", addOneProduct);
 productRouter.put("/update", updateOneProduct);
 productRouter.delete("/delete/:id", deleteOneProduct);
 productRouter.get("/filter", filler);
-productRouter.get("/all", getAllProducts);
 productRouter.get("/getid", getById);
 
 // Account-router
 const accountRouter = Router();
+accountRouter.get("/filter", filter);
 accountRouter.get("/all", getAllAccounts);
 accountRouter.post("/add", addOneAccount);
 accountRouter.put("/update", updateOneAccount);
