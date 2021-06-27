@@ -1,5 +1,6 @@
 import oracledb from "oracledb";
 import knex, { Knex } from "knex";
+
 class OracleDB {
   private password = "hr";
 
@@ -16,6 +17,7 @@ class OracleDB {
     });
     
     return knex2;
+    
   }
 
   protected async CloseDB(connection: oracledb.Connection) {

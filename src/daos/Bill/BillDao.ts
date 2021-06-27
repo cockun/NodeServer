@@ -156,7 +156,7 @@ class BillDao extends OracleDB implements IBillDao {
     return new Result<string>(null, "connect oracle err");
   }
 
-  public async update(bill: IBillReq): Promise<Result<IBill>> {
+  public async update(bill: IAccountReq): Promise<Result<IBill>> {
     const db = this.OpenDB();
     if (!bill.ID) {
       return new Result<IBill>(null);
@@ -179,7 +179,7 @@ class BillDao extends OracleDB implements IBillDao {
     }
     return new Result<IBill>(null, "connect oracle err");
   }
-
+ 
   public async delete(id: string): Promise<void> {
     const db = this.OpenDB();
 
