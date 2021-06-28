@@ -74,7 +74,7 @@ class BillDao extends OracleDB implements IBillDao {
       }
 
       if (billReq.ORDERBYNAME) {
-        if (billReq.ORDERBYASC) {
+        if (billReq.ORDERBYASC  != undefined) {
           tmp.orderBy([
             {
               column: billReq.ORDERBYNAME,

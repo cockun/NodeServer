@@ -64,8 +64,8 @@ class ProductDao extends OracleDB implements IProductDao {
       }
 
       if (productReq.ORDERBYNAME) {
-        if (productReq.ORDERBYASC) {
-          tmp.orderBy([
+        if (productReq.ORDERBYASC != undefined) {
+          tmp.orderBy([ 
             {
               column: productReq.ORDERBYNAME,
               order: productReq.ORDERBYASC ? "asc" : "desc",

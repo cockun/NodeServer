@@ -62,7 +62,7 @@ class AccountDao extends OracleDB implements IAccountDao {
       }
 
       if (accountReq.ORDERBYNAME) {
-        if (accountReq.ORDERBYASC) {
+        if (accountReq.ORDERBYASC  != undefined) {
           tmp.orderBy([
             {
               column: accountReq.ORDERBYNAME,
