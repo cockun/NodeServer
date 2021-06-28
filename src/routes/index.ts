@@ -27,6 +27,15 @@ import {
   updateOneBill,
 } from "../controllers/BillController";
 
+import {
+  getCategoryById,
+  addOneCategory,
+  updateOneCategory,
+  deleteOneCategory
+} from "../controllers/CategoriesController";
+
+
+
 // Auth router
 const authRouter = Router();
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
@@ -64,6 +73,12 @@ billRouter.post("/add", addOneBill);
 billRouter.put("/update", updateOneBill);
 billRouter.delete("/delete/:id", updateOneBill);
 
+const categoryRouter = Router();
+categoryRouter.get("/all", getCategoryById);
+categoryRouter.post("/add", addOneCategory);
+categoryRouter.put("/update", updateOneCategory);
+categoryRouter.delete("/delete/:id", deleteOneCategory);
+
 
 
 
@@ -76,4 +91,5 @@ baseRouter.use("/accounts", adminMW, accountRouter);
 baseRouter.use("/products", productRouter);
 baseRouter.use("/accountinfos", accountInfoRouter);
 baseRouter.use("/bills",billRouter)
+baseRouter.use("/categories",categoryRouter)
 export default baseRouter;

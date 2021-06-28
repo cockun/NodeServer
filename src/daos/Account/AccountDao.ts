@@ -62,7 +62,7 @@ class AccountDao extends OracleDB implements IAccountDao {
       }
 
       if (accountReq.ORDERBYNAME) {
-        if (accountReq.ORDERBYASC) {
+        if (accountReq.ORDERBYASC  != undefined) {
           tmp.orderBy([
             {
               column: accountReq.ORDERBYNAME,
@@ -185,7 +185,7 @@ class AccountDao extends OracleDB implements IAccountDao {
     if (db) {
       const transaction = await db.transaction();
       try {
-        const ressult = await db(this.tableName).where("ID", id).del();
+      await db(this.tableName).where("ID", id).del();
         transaction.commit();
       } catch (e) {
         transaction.rollback();

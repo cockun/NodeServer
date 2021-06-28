@@ -47,7 +47,7 @@ class CategoryDao extends OracleDB implements ICategoryDao {
 
       return new Result<ICategory[]>(result);
     }
-    return undefined;
+    return new Result<ICategory[]>([]);
   }
 
   public async getAll(): Promise<Result<ICategory[]> | undefined> {
@@ -126,7 +126,7 @@ class CategoryDao extends OracleDB implements ICategoryDao {
     if (db) {
       const transaction = await db.transaction();
       try {
-        const ressult = await db(this.tableName).where("ID", id).del();
+        await db(this.tableName).where("ID", id).del();
         transaction.commit();
       } catch (e) {
         transaction.rollback();

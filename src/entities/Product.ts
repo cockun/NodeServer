@@ -37,11 +37,7 @@ export interface IProduct {
         this.ID = Helper.generateUID();
         this.NAME = productReq.NAME?productReq.NAME:"";
         this.PRICE = productReq.PRICE?productReq.PRICE:0;
-        if( productReq.CATEGORY?.ID){
-          this.CATEGORYID = productReq.CATEGORY?.ID;
-        }else{
-          this.CATEGORYID= ""
-        } 
+        this.CATEGORYID = productReq.CATEGORYID?productReq.CATEGORYID:'';
       
         this.IMGSRC = productReq.IMGSRC?productReq.IMGSRC:"";
         this.DISCOUNT = productReq.DISCOUNT?productReq.DISCOUNT:0;

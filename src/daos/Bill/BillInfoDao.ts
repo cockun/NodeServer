@@ -2,7 +2,6 @@ import OracleDB from "@daos/OracleDb/OracleDB";
 import { Result } from "@entities/Result";
 import { IBillinfo, Billinfo } from "@entities/Billinfo";
 import { Knex } from "knex";
-import ProductDao from "../Product/ProductDao";
 
 export interface IBillInfoDao {
   getById: (id: string) => Promise<Result<IBillinfo>>;
