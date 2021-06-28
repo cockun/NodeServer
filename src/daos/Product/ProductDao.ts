@@ -44,6 +44,22 @@ class ProductDao extends OracleDB implements IProductDao {
     return new Result<IProductRes>(null, "Lỗi");
   }
 
+  
+  public async getManyByIds(ids: string[]): Promise<Result<IProduct[]>> {
+    const db = this.OpenDB();
+    if (db) {
+      
+      const result = await db<IProduct>(this.tableName)
+        .select("*")
+        .whereIn("ID",ids)
+     
+      return new Result<IProduct[]>(result);
+    }
+    return new Result<IProduct[]>(null, "Lỗi");
+  }
+
+  
+
   public async filter(
     productReq: IProdctReq
   ): Promise<Result<IProductRes[]> | undefined> {
@@ -127,19 +143,21 @@ class ProductDao extends OracleDB implements IProductDao {
     return new Result<string>(null, "connect oracle err");
   }
 
-  public async update(product: IProdctReq): Promise<Result<IProductRes>> {
+  public async update(productReq: IProdctReq): Promise<Result<IProductRes>> {
     const db = this.OpenDB();
-    if (!product.ID) {
+    if (!productReq.ID) {
       return new Result<IProductRes>(null);
     }
+
+    
 
     if (db) {
       const transaction = await db.transaction();
       try {
         const result = await db<IProductRes>(this.tableName)
           .transacting(transaction)
-          .where("ID", product.ID)
-          .update(Helper.upcaseKey(product))
+          .where("ID", productReq.ID)
+          .update(Helper.upcaseKey(productReq))
           .returning("*");
         transaction.commit();
         return new Result<IProductRes>(result[1]);

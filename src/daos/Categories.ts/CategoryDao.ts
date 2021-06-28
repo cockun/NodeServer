@@ -47,7 +47,7 @@ class CategoryDao extends OracleDB implements ICategoryDao {
 
       return new Result<ICategory[]>(result);
     }
-    return undefined;
+    return new Result<ICategory[]>([]);
   }
 
   public async getAll(): Promise<Result<ICategory[]> | undefined> {

@@ -28,10 +28,10 @@ export async function getById(req: Request, res: Response) {
 }
 
 export async function filler(req: Request, res: Response) {
-    const {data} = req.body;
+    const data = req.query;
     const product = await productDao.filter(data);
     return res.status(OK).json(product);
-}
+}   
 
 
 /**
