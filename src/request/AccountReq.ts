@@ -13,9 +13,6 @@ export interface IAccountReq {
   ORDERBYASC?: boolean;
   ORDERBYNAME?:string;
   
-  
-
-  
 
 }
 
