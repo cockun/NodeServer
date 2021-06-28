@@ -1,5 +1,5 @@
 import StatusCodes from 'http-status-codes';
-import { Request, Response } from 'express';
+import { json, query, Request, Response } from 'express';
 
 import ProductDao from '@daos/Product/ProductDao';
 import { paramMissingError } from '@shared/constants';
@@ -7,7 +7,7 @@ const productDao = new ProductDao();
 
 const { BAD_REQUEST, CREATED, OK } = StatusCodes;
 
-
+import querystring from 'querystring';
 
 /**
  * Get all Accounts.
@@ -28,7 +28,7 @@ export async function getById(req: Request, res: Response) {
 }
 
 export async function filler(req: Request, res: Response) {
-    const data = req.query;
+    const data = req.query ;
     const product = await productDao.filter(data);
     return res.status(OK).json(product);
 }   

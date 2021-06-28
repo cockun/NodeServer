@@ -25,7 +25,7 @@ export async function getAllBills(req: Request, res: Response) {
 }
 
 export async function filter(req: Request, res: Response) {
-    const { data } = req.body;
+    const data = req.query;
     if (!data) {
         return res.status(BAD_REQUEST).json({
             error: paramMissingError,

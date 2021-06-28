@@ -17,7 +17,7 @@ export async function getAllAccounts(req: Request, res: Response) {
 }
 
 export async function filter(req: Request, res: Response) {
-    const {data} = req.body;
+    const data = req.query;
     const accounts = await accountDao.filter(data);
     return res.status(OK).json(accounts);
 }
