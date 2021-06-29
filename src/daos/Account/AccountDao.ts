@@ -117,7 +117,7 @@ class AccountDao extends OracleDB implements IAccountDao {
         .where(accountReq)
         .join<IAccountRes>("ACCOUNTINFO", { "ACCOUNTINFO.ACCOUNTID": "ACCOUNTS.ID" })
         .first();
-      
+
       if (result) {
         const accountRes = new AccountRes(
           result.ID,
