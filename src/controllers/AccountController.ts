@@ -30,8 +30,8 @@ export async function getOneById(req: Request, res: Response) {
 }
 
 export async function getLogin(req: Request, res: Response) {
-    const {USER,PASSWORD} = req.body;
-    const accounts = await accountDao.Login(USER,PASSWORD);
+    const {data} = req.body;
+    const accounts = await accountDao.Login(data.USERNAME,data.PASSWORD);
     return res.status(OK).json(accounts);
 }
 
