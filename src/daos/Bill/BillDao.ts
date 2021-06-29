@@ -8,15 +8,16 @@ import { Helper } from "src/utils/Helper";
 import { IBill, Bill } from "@entities/Bills";
 import { callbackify } from "util";
 import { IProdctReq } from "src/request/ProductReq";
-import { IBillReq } from "src/request/BillReq";
+import { BillReq, IBillReq } from "src/request/BillReq";
 import ProductDao from "../Product/ProductDao";
 import { Billinfo } from "../../entities/Billinfo";
 import BillInfoDao from "./BillInfoDao";
 import { BillRes } from "../../response/BillRes";
 import AccountInfoDao from "../Account/AccountInfoDao";
+import { readSync } from "fs";
 
 export interface IBillDao {
-  getOneById: (id: string) => Promise<Result<IBill>>;
+  getById: (id: string) => Promise<Result<IBill>>;
   getAll: () => Promise<Result<IBill[]> | undefined>;
   add: (bill: IBillReq) => Promise<Result<string>>;
   update: (bill: IBillReq) => Promise<Result<IBill>>;
@@ -27,7 +28,7 @@ export interface IBillDao {
 class BillDao extends OracleDB implements IBillDao {
   public tableName = "BILLS";
 
-  public async getOneById(id: string): Promise<Result<IBill>> {
+  public async getById(id: string): Promise<Result<IBill>> {
     const db = this.OpenDB();
     if (db) {
       const result = await db<Bill>(this.tableName)
@@ -113,7 +114,8 @@ class BillDao extends OracleDB implements IBillDao {
       const db = this.OpenDB();
       const bill = new Bill(billReq);
       const productDao = new ProductDao();
-      const accountInfoDao = new AccountInfoDao();
+    
+
       if (!billReq.BILLINFOS) {
         return new Result<string>(null, "Lỗi thiếu thông tin");
       }
@@ -140,23 +142,26 @@ class BillDao extends OracleDB implements IBillDao {
 
       bill.TOTAL = total;
 
-      const point = total / 100;
-
       if (db) {
         const transaction = await db.transaction();
         await db<Bill>(this.tableName)
           .transacting(transaction)
           .insert(Helper.upcaseKey(bill));
-        const resultChangePoint = await accountInfoDao.changePoint(
-          billReq.ACCOUNTID,
-          point,
-          transaction
-        );
-        if(!resultChangePoint || !resultChangePoint.data){
-          return new Result<string>(null, "Lỗi");
-        }
+
+        billInfos.forEach(async (p) => {
+          const tmp = await productDao.changeSold(
+            p.PRODUCTID,
+            p.QUANTITY,
+            transaction
+          );
+          if (!tmp || !tmp.data) {
+            return new Result<string>(null, "Lỗi");
+          }
+        });
+
         const billInfoDao = new BillInfoDao();
         const tmp = await billInfoDao.add(billInfos, transaction);
+
         if (tmp && tmp.data) {
           transaction.commit();
           return new Result<string>(bill.ID);
@@ -171,19 +176,41 @@ class BillDao extends OracleDB implements IBillDao {
     }
   }
 
-  public async update(bill: IAccountReq): Promise<Result<IBill>> {
+  public async update(billReq: IBillReq): Promise<Result<IBill>> {
     const db = this.OpenDB();
-    if (!bill.ID) {
+    if (!billReq.ID) {
+      return new Result<IBill>(null, "Bill không tồn tại");
+    }
+    if (!billReq.BILLSTATUS) {
       return new Result<IBill>(null);
     }
 
     if (db) {
       const transaction = await db.transaction();
       try {
+        if (billReq.BILLSTATUS == "Hoàn thành") {
+          const accountInfoDao = new AccountInfoDao();
+          const bill = await this.getById(billReq.ID);
+          if (!bill || !bill.data) {
+            return new Result<IBill>(null, "Bill không tồn tại");
+          }
+          const resultChangePoint = await accountInfoDao.changePoint(
+            bill.data.ACCOUNTID,
+            bill.data.TOTAL / 100,
+            transaction
+          );
+          if (!resultChangePoint.data) {
+            return new Result<IBill>(
+              null,
+              resultChangePoint.err ? resultChangePoint.err : "Lỗi"
+            );
+          }
+        }
+
         const result = await db<IBill>(this.tableName)
           .transacting(transaction)
-          .where("ID", bill.ID)
-          .update(Helper.upcaseKey(bill))
+          .where("ID", billReq.ID)
+          .update("BILLSTATUS", billReq.BILLSTATUS)
           .returning("*");
         transaction.commit();
         return new Result<IBill>(result[1]);

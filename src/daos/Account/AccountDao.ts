@@ -2,17 +2,14 @@ import OracleDB from "@daos/OracleDb/OracleDB";
 import { IAccount, Account } from "@entities/Account";
 import { AccountInfo, IAccountInfo } from "@entities/AccountInfo";
 import { Result } from "@entities/Result";
-import { table } from "console";
-import { Knex } from "knex";
 import { AccountReq, IAccountReq } from "src/request/AccountReq";
 import { Helper } from "src/utils/Helper";
 
-import { callbackify } from "util";
 import { AccountRes, IAccountRes } from "../../response/AccountRes";
 import AccountInfoDao from "./AccountInfoDao";
 
 export interface IAccountDao {
-  getOne: (data: IAccountReq) => Promise<Result<IAccount> | undefined>;
+  getByUser: (user: string) => Promise<Result<IAccount>>;
   getAll: () => Promise<Result<IAccount[]> | undefined>;
   add: (account: IAccountReq) => Promise<Result<string>>;
   update: (account: IAccountReq) => Promise<Result<IAccount>>;
@@ -22,18 +19,18 @@ export interface IAccountDao {
 class AccountDao extends OracleDB implements IAccountDao {
   public tableName = "ACCOUNTS";
 
-  public async getOne(
-    data: IAccountReq
-  ): Promise<Result<IAccount> | undefined> {
+  public async getByUser(
+    user: string
+  ): Promise<Result<IAccount>> {
     const db = this.OpenDB();
     if (db) {
       const result = await db<Account>(this.tableName)
         .select("*")
-        .where(Helper.upcaseKey(data))
+        .where("USERNAME", user)
         .first();
       return new Result<IAccount>(result);
     }
-    return undefined;
+    return new Result<IAccount>(null,"User không tồn tại");
   }
 
   public async filter(

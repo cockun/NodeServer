@@ -32,8 +32,8 @@ export async function getOneById(req: Request, res: Response) {
 
 
 export async function getOne(req: Request, res: Response) {
-    const {data} = req.body;
-    const accounts = await accountDao.getOne(data);
+    const {USERNAME} = req.body;
+    const accounts = await accountDao.getByUser(USERNAME);
     return res.status(OK).json(accounts);
 }
 

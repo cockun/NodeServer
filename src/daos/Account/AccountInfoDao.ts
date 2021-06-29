@@ -2,12 +2,9 @@ import OracleDB from "@daos/OracleDb/OracleDB";
 import { IAccount, Account } from "@entities/Account";
 import { AccountInfo, IAccountInfo } from "@entities/AccountInfo";
 import { Result } from "@entities/Result";
-import { IRole } from "@entities/Role";
 import { Knex } from "knex";
 import { AccountReq, IAccountReq } from "src/request/AccountReq";
 import { Helper } from "src/utils/Helper";
-
-import { callbackify } from "util";
 import RoleDao from "./Role";
 
 export interface IAccountInfoDao {
