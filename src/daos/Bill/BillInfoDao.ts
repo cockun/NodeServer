@@ -46,6 +46,7 @@ class BillInfoDao extends OracleDB implements IBillInfoDao {
     const db = this.OpenDB();
     if (db) {
       try {
+       
         const result = await db<Billinfo>(this.tableName)
           .transacting(transaction)
           .insert(billInfos);

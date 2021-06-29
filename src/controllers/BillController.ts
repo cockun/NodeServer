@@ -48,8 +48,8 @@ export async function addOneBill(req: Request, res: Response) {
             error: paramMissingError,
         });
     }
-    await billDao.add(data);
-    return res.status(CREATED).end();
+    const bill = await billDao.add(data);
+    return res.status(CREATED).json(bill);
 }
 
 

@@ -114,7 +114,8 @@ class BillDao extends OracleDB implements IBillDao {
       const db = this.OpenDB();
       const bill = new Bill(billReq);
       const productDao = new ProductDao();
-    
+      bill.BILLSTATUS = "Đang xử lý";
+
 
       if (!billReq.BILLINFOS) {
         return new Result<string>(null, "Lỗi thiếu thông tin");
@@ -146,28 +147,30 @@ class BillDao extends OracleDB implements IBillDao {
         const transaction = await db.transaction();
         await db<Bill>(this.tableName)
           .transacting(transaction)
-          .insert(Helper.upcaseKey(bill));
+          .insert(bill);
 
-        billInfos.forEach(async (p) => {
-          const tmp = await productDao.changeSold(
-            p.PRODUCTID,
-            p.QUANTITY,
-            transaction
-          );
-          if (!tmp || !tmp.data) {
-            return new Result<string>(null, "Lỗi");
-          }
-        });
+      
 
         const billInfoDao = new BillInfoDao();
         const tmp = await billInfoDao.add(billInfos, transaction);
+
+        // billInfos.forEach(async (p) => {
+        //   const tmp = await productDao.changeSold(
+        //     p.PRODUCTID,
+        //     p.QUANTITY,
+        //     transaction
+        //   );
+        //   if(!tmp.data) {
+        //     return new Result<string>(null, tmp.err?tmp.err:"Lỗi");
+        //   }
+        // });
 
         if (tmp && tmp.data) {
           transaction.commit();
           return new Result<string>(bill.ID);
         } else {
           transaction.rollback();
-          return new Result<string>(null, "Lỗi");
+          return new Result<string>(null, tmp.err?tmp.err:"Lỗi");
         }
       }
       return new Result<string>(null, "connect oracle err");

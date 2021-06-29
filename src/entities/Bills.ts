@@ -31,11 +31,11 @@ export interface IBill {
         this.ID = Helper.generateUID();
         this.TOTAL = 0;
         this.DATEBUY = new Date(Date.now());
-        this.FULLNAME = billReq.FULLNAME?billReq.FULLNAME:"";
-        this.PHONE = billReq.PHONE?billReq.PHONE:"";
-        this.ADDRESS = billReq.ADDRESS?billReq.ADDRESS:"";
-        this.ACCOUNTID = billReq.ACCOUNTID?billReq.ACCOUNTID:"";
-        this.BILLSTATUS = "";
+        this.FULLNAME = billReq.FULLNAME ? billReq.FULLNAME:"";
+        this.PHONE = billReq.PHONE ? billReq.PHONE:"";
+        this.ADDRESS = billReq.ADDRESS ? billReq.ADDRESS:"";
+        this.ACCOUNTID = billReq.ACCOUNTID ? billReq.ACCOUNTID:"";
+        this.BILLSTATUS = billReq.BILLSTATUS ??"Đang xử lý";
     }
   
   }
