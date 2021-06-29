@@ -18,7 +18,8 @@ import {
   updateOneProduct,
   deleteOneProduct,
   filler,
-  getById
+  getById,
+  getAllProducts
 } from "../controllers/ProductController";
 import {
   getAllBills,
@@ -49,8 +50,9 @@ productRouter.put("/update", updateOneProduct);
 productRouter.delete("/delete/:id", deleteOneProduct);
 productRouter.get("/filter", filler);
 productRouter.get("/getid/:ID", getById);
+productRouter.get("/all", getAllProducts);
 
-// Account-router
+// Account-router 123 123 123
 const accountRouter = Router();
 accountRouter.get("/filter", filter);
 accountRouter.get("/all", getAllAccounts);
