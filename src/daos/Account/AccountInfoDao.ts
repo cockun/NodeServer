@@ -50,19 +50,9 @@ class AccountDao extends OracleDB implements IAccountInfoDao {
     const accountInfo = new AccountInfo(accountReq);
     if (db) {
       try {
-        const roleDao = new RoleDao();
-        const tmp = await roleDao.getOneByName(
-          accountReq.ROLE ? accountReq.ROLE : "User"
-        );
-        if (tmp && tmp.data) {
-          accountInfo.ROLEID = tmp.data.ROLENAME;
-        } else {
-          return new Result<number>(null, "get RoldId null");
-        }
-
         const result = await db<AccountInfo>(this.tableName)
           .transacting(transaction)
-          .insert(Helper.upcaseKey(accountInfo));
+          .insert(accountInfo);
         return new Result<number>(result as unknown as number);
       } catch (e) {
         return new Result<number>(null, e.message);

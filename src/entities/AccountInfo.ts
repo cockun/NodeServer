@@ -30,7 +30,7 @@ export class AccountInfo implements IAccountInfo {
     this.ADDRESS=accountReq.ADDRESS?accountReq.ADDRESS:"";
     this.PHONE  = accountReq.PHONE?accountReq.PHONE:"";
     this.POINTS = 0;
-    this.ROLEID = "";
+    this.ROLEID = accountReq.ROLE??"";
     this.CREATEDATE= new Date(Date.now());
     
   
