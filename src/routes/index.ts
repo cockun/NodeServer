@@ -62,7 +62,7 @@ accountRouter.post("/add", addOneAccount);
 accountRouter.put("/update", updateOneAccount);
 accountRouter.delete("/delete/:id", deleteOneAccount);
 accountRouter.get("/getid/:ID", getOneById);
-accountRouter.get("/login", getLogin);
+accountRouter.post("/login", getLogin);
 // AccountInfo-router
 const accountInfoRouter = Router();
 accountInfoRouter.get("/all", getAllAccountInfos);
