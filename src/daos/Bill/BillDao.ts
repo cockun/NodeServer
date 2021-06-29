@@ -8,14 +8,16 @@ import { Helper } from "src/utils/Helper";
 import { IBill, Bill } from "@entities/Bills";
 import { callbackify } from "util";
 import { IProdctReq } from "src/request/ProductReq";
-import { IBillReq } from "src/request/BillReq";
+import { BillReq, IBillReq } from "src/request/BillReq";
 import ProductDao from "../Product/ProductDao";
 import { Billinfo } from "../../entities/Billinfo";
 import BillInfoDao from "./BillInfoDao";
 import { BillRes } from "../../response/BillRes";
+import AccountInfoDao from "../Account/AccountInfoDao";
+import { readSync } from "fs";
 
 export interface IBillDao {
-  getOneById: (id: string) => Promise<Result<IBill>>;
+  getById: (id: string) => Promise<Result<IBill>>;
   getAll: () => Promise<Result<IBill[]> | undefined>;
   add: (bill: IBillReq) => Promise<Result<string>>;
   update: (bill: IBillReq) => Promise<Result<IBill>>;
@@ -26,7 +28,7 @@ export interface IBillDao {
 class BillDao extends OracleDB implements IBillDao {
   public tableName = "BILLS";
 
-  public async getOneById(id: string): Promise<Result<IBill>> {
+  public async getById(id: string): Promise<Result<IBill>> {
     const db = this.OpenDB();
     if (db) {
       const result = await db<Bill>(this.tableName)
@@ -105,70 +107,110 @@ class BillDao extends OracleDB implements IBillDao {
   }
 
   public async add(billReq: IBillReq): Promise<Result<string>> {
-    try{
+    try {
+      if (!billReq.ACCOUNTID) {
+        return new Result<string>(null, "Thiếu thông tin");
+      }
       const db = this.OpenDB();
       const bill = new Bill(billReq);
       const productDao = new ProductDao();
-      if( !billReq.BILLINFOS){
-        return new Result<string>(null, "Lỗi thiếu thông tin")
+    
+
+      if (!billReq.BILLINFOS) {
+        return new Result<string>(null, "Lỗi thiếu thông tin");
       }
-      const productIds =
-        billReq.BILLINFOS.map(p=>p.PRODUCTID)??[];
+      const productIds = billReq.BILLINFOS.map((p) => p.PRODUCTID) ?? [];
       const products = (await productDao.getManyByIds(productIds)).data;
-      if(!products){
-        return new Result<string>(null, "Mã sản phẩm lỗi")
+      if (!products) {
+        return new Result<string>(null, "Mã sản phẩm lỗi");
       }
-      const billInfos =  billReq.BILLINFOS.map(p=> {
-        const product = products.find(z=> z.ID = p.PRODUCTID)
-        if(product){
-          return  new Billinfo(
+      let total = 0;
+      const billInfos = billReq.BILLINFOS.map((p) => {
+        const product = products.find((z) => (z.ID = p.PRODUCTID));
+        if (product) {
+          total = total + p.QUANTITY * product.DISCOUNT;
+          return new Billinfo(
             bill.ID,
             p.PRODUCTID,
             p.QUANTITY,
             product.DISCOUNT
           );
-        }else{
-          return  {} as Billinfo
+        } else {
+          return {} as Billinfo;
         }
-      })
+      });
+
+      bill.TOTAL = total;
+
       if (db) {
         const transaction = await db.transaction();
+        await db<Bill>(this.tableName)
+          .transacting(transaction)
+          .insert(Helper.upcaseKey(bill));
 
-          await db<Bill>(this.tableName)
-            .transacting(transaction)
-            .insert(Helper.upcaseKey(bill));
-  
-          const billInfoDao = new BillInfoDao();
-          const tmp = await billInfoDao.add(billInfos, transaction);
-          if (tmp && tmp.data) {
-            transaction.commit();
-            return new Result<string>(bill.ID);
-          } else {
-            transaction.rollback();
+        billInfos.forEach(async (p) => {
+          const tmp = await productDao.changeSold(
+            p.PRODUCTID,
+            p.QUANTITY,
+            transaction
+          );
+          if (!tmp || !tmp.data) {
             return new Result<string>(null, "Lỗi");
           }
-       
+        });
+
+        const billInfoDao = new BillInfoDao();
+        const tmp = await billInfoDao.add(billInfos, transaction);
+
+        if (tmp && tmp.data) {
+          transaction.commit();
+          return new Result<string>(bill.ID);
+        } else {
+          transaction.rollback();
+          return new Result<string>(null, "Lỗi");
+        }
       }
       return new Result<string>(null, "connect oracle err");
-    }catch(e){
+    } catch (e) {
       return new Result<string>(null, e.message);
     }
-   
   }
 
-  public async update(bill: IAccountReq): Promise<Result<IBill>> {
+  public async update(billReq: IBillReq): Promise<Result<IBill>> {
     const db = this.OpenDB();
-    if (!bill.ID) {
+    if (!billReq.ID) {
+      return new Result<IBill>(null, "Bill không tồn tại");
+    }
+    if (!billReq.BILLSTATUS) {
       return new Result<IBill>(null);
     }
 
     if (db) {
       const transaction = await db.transaction();
       try {
+        if (billReq.BILLSTATUS == "Hoàn thành") {
+          const accountInfoDao = new AccountInfoDao();
+          const bill = await this.getById(billReq.ID);
+          if (!bill || !bill.data) {
+            return new Result<IBill>(null, "Bill không tồn tại");
+          }
+          const resultChangePoint = await accountInfoDao.changePoint(
+            bill.data.ACCOUNTID,
+            bill.data.TOTAL / 100,
+            transaction
+          );
+          if (!resultChangePoint.data) {
+            return new Result<IBill>(
+              null,
+              resultChangePoint.err ? resultChangePoint.err : "Lỗi"
+            );
+          }
+        }
+
         const result = await db<IBill>(this.tableName)
           .transacting(transaction)
-          .where("ID", bill.ID)
-          .update(Helper.upcaseKey(bill))
+          .where("ID", billReq.ID)
+          .update("BILLSTATUS", billReq.BILLSTATUS)
           .returning("*");
         transaction.commit();
         return new Result<IBill>(result[1]);

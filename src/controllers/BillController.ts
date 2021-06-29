@@ -21,7 +21,7 @@ const { BAD_REQUEST, CREATED, OK } = StatusCodes;
  */
 export async function getAllBills(req: Request, res: Response) {
     const bills = await billDao.getAll();
-    return res.status(OK).json({bills});
+    return res.status(OK).json(bills);
 }
 
 export async function filter(req: Request, res: Response) {

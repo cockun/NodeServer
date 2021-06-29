@@ -7,6 +7,7 @@ import { IProdctReq } from "src/request/ProductReq";
 import { ICategory } from "../../entities/Categories";
 import { IProductRes, ProductRes } from "../../response/ProductRes";
 import CategoryDao from "../Categories.ts/CategoryDao";
+import { Knex } from "knex";
 
 export interface IProductDao {
   getAll: () => Promise<Result<IProductRes[]> | undefined>;
@@ -17,8 +18,6 @@ export interface IProductDao {
 
 class ProductDao extends OracleDB implements IProductDao {
   public tableName = "PRODUCTS";
-
-
 
   public async getById(id: string): Promise<Result<IProductRes>> {
     const db = this.OpenDB();
@@ -31,7 +30,7 @@ class ProductDao extends OracleDB implements IProductDao {
       if (result?.CATEGORYID) {
         const category = await db<ICategory>("CATEGORIES")
           .select("*")
-          .where("ID" ,  result.CATEGORYID)
+          .where("ID", result.CATEGORYID)
           .first();
         if (category) {
           productRes = new ProductRes(result, category);
@@ -44,21 +43,17 @@ class ProductDao extends OracleDB implements IProductDao {
     return new Result<IProductRes>(null, "Lỗi");
   }
 
-  
   public async getManyByIds(ids: string[]): Promise<Result<IProduct[]>> {
     const db = this.OpenDB();
     if (db) {
-      
       const result = await db<IProduct>(this.tableName)
         .select("*")
-        .whereIn("ID",ids)
-     
+        .whereIn("ID", ids);
+
       return new Result<IProduct[]>(result);
     }
     return new Result<IProduct[]>(null, "Lỗi");
   }
-
-  
 
   public async filter(
     productReq: IProdctReq
@@ -81,7 +76,7 @@ class ProductDao extends OracleDB implements IProductDao {
 
       if (productReq.ORDERBYNAME) {
         if (productReq.ORDERBYASC != undefined) {
-          tmp.orderBy([ 
+          tmp.orderBy([
             {
               column: productReq.ORDERBYNAME,
               order: productReq.ORDERBYASC ? "asc" : "desc",
@@ -148,9 +143,6 @@ class ProductDao extends OracleDB implements IProductDao {
     if (!productReq.ID) {
       return new Result<IProductRes>(null);
     }
-
-    
-
     if (db) {
       const transaction = await db.transaction();
       try {
@@ -169,13 +161,50 @@ class ProductDao extends OracleDB implements IProductDao {
     return new Result<IProductRes>(null, "connect oracle err");
   }
 
+  public async changeSold(
+    proudctId: string,
+    sold: number,
+    transaction: Knex.Transaction<any, any[]>
+  ): Promise<Result<IProductRes>> {
+    const db = this.OpenDB();
+    if (!proudctId) {
+      return new Result<IProductRes>(null);
+    }
+    if (db) {
+      let soldNew =0; 
+      try {
+
+        const product = await this.getById(proudctId);
+        if(product && product.data){
+          soldNew = product.data.SOLD + sold;
+        }else{
+          return new Result<IProductRes>(null,"productId không tồn tại");
+        }
+      
+
+
+        const result = await db<IProductRes>(this.tableName)
+          .transacting(transaction)
+          .where("ID", proudctId)
+          .update("SOLD", soldNew)
+          .returning("*");
+
+        return new Result<IProductRes>(result[1]);
+      } catch (e) {
+       transaction.rollback();
+        return new Result<IProductRes>(null);
+      }
+    }
+    return new Result<IProductRes>(null, "connect oracle err");
+  }
+
   public async delete(id: string): Promise<void> {
     const db = this.OpenDB();
 
     if (db) {
       const transaction = await db.transaction();
       try {
-         await db(this.tableName).where("ID", id).del();
+        await db(this.tableName).where("ID", id).del();
         transaction.commit();
       } catch (e) {
         transaction.rollback();

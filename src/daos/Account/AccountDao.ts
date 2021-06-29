@@ -2,16 +2,14 @@ import OracleDB from "@daos/OracleDb/OracleDB";
 import { IAccount, Account } from "@entities/Account";
 import { AccountInfo, IAccountInfo } from "@entities/AccountInfo";
 import { Result } from "@entities/Result";
-import { table } from "console";
 import { AccountReq, IAccountReq } from "src/request/AccountReq";
 import { Helper } from "src/utils/Helper";
 
-import { callbackify } from "util";
 import { AccountRes, IAccountRes } from "../../response/AccountRes";
 import AccountInfoDao from "./AccountInfoDao";
 
 export interface IAccountDao {
-  getOne: (data: IAccountReq) => Promise<Result<IAccount> | undefined>;
+  getByUser: (user: string) => Promise<Result<IAccount>>;
   getAll: () => Promise<Result<IAccount[]> | undefined>;
   add: (account: IAccountReq) => Promise<Result<string>>;
   update: (account: IAccountReq) => Promise<Result<IAccount>>;
@@ -21,18 +19,18 @@ export interface IAccountDao {
 class AccountDao extends OracleDB implements IAccountDao {
   public tableName = "ACCOUNTS";
 
-  public async getOne(
-    data: IAccountReq
-  ): Promise<Result<IAccount> | undefined> {
+  public async getByUser(
+    user: string
+  ): Promise<Result<IAccount>> {
     const db = this.OpenDB();
     if (db) {
       const result = await db<Account>(this.tableName)
         .select("*")
-        .where(Helper.upcaseKey(data))
+        .where("USERNAME", user)
         .first();
       return new Result<IAccount>(result);
     }
-    return undefined;
+    return new Result<IAccount>(null,"User không tồn tại");
   }
 
   public async filter(
@@ -62,7 +60,7 @@ class AccountDao extends OracleDB implements IAccountDao {
       }
 
       if (accountReq.ORDERBYNAME) {
-        if (accountReq.ORDERBYASC  != undefined) {
+        if (accountReq.ORDERBYASC != undefined) {
           tmp.orderBy([
             {
               column: accountReq.ORDERBYNAME,
@@ -195,13 +193,15 @@ class AccountDao extends OracleDB implements IAccountDao {
     return new Result<IAccount>(null, "connect oracle err");
   }
 
+ 
+
   public async delete(id: string): Promise<void> {
     const db = this.OpenDB();
 
     if (db) {
       const transaction = await db.transaction();
       try {
-      await db(this.tableName).where("ID", id).del();
+        await db(this.tableName).where("ID", id).del();
         transaction.commit();
       } catch (e) {
         transaction.rollback();
