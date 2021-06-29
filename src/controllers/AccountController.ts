@@ -32,7 +32,7 @@ export async function getOneById(req: Request, res: Response) {
 export async function getLogin(req: Request, res: Response) {
     const {data} = req.body;
     const accounts = await accountDao.Login(data.USERNAME,data.PASSWORD);
-    return res.status(OK).json(accounts);
+    return res.status(OK).json({accounts});
 }
 
 

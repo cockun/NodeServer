@@ -120,7 +120,10 @@ class AccountDao extends OracleDB implements IAccountDao {
     if (db) {
       const result = await db<Account>(this.tableName)
         .select("*")
-        .where("USERNAME", user && "PASSWORD" ,pass)
+        .where({
+          "USERNAME": user,
+          "PASSWORD":pass
+        })
         .first();
       return new Result<IAccount>(result);
     }
