@@ -3,6 +3,7 @@ import { IAccount, Account } from "@entities/Account";
 import { AccountInfo, IAccountInfo } from "@entities/AccountInfo";
 import { Result } from "@entities/Result";
 import { table } from "console";
+import { Knex } from "knex";
 import { AccountReq, IAccountReq } from "src/request/AccountReq";
 import { Helper } from "src/utils/Helper";
 
@@ -62,7 +63,7 @@ class AccountDao extends OracleDB implements IAccountDao {
       }
 
       if (accountReq.ORDERBYNAME) {
-        if (accountReq.ORDERBYASC  != undefined) {
+        if (accountReq.ORDERBYASC != undefined) {
           tmp.orderBy([
             {
               column: accountReq.ORDERBYNAME,
@@ -179,13 +180,15 @@ class AccountDao extends OracleDB implements IAccountDao {
     return new Result<IAccount>(null, "connect oracle err");
   }
 
+ 
+
   public async delete(id: string): Promise<void> {
     const db = this.OpenDB();
 
     if (db) {
       const transaction = await db.transaction();
       try {
-      await db(this.tableName).where("ID", id).del();
+        await db(this.tableName).where("ID", id).del();
         transaction.commit();
       } catch (e) {
         transaction.rollback();

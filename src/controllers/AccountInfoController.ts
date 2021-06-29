@@ -24,7 +24,7 @@ export async function getAllAccountInfos(req: Request, res: Response) {
 
 export async function getOneById(req: Request, res: Response) {
     const {data} = req.body;
-    const accounts = await accountInfoDao.getOneById(data.id);
+    const accounts = await accountInfoDao.getById(data.id);
     return res.status(OK).json({accounts});
 }
 

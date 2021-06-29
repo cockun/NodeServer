@@ -13,6 +13,7 @@ import ProductDao from "../Product/ProductDao";
 import { Billinfo } from "../../entities/Billinfo";
 import BillInfoDao from "./BillInfoDao";
 import { BillRes } from "../../response/BillRes";
+import AccountInfoDao from "../Account/AccountInfoDao";
 
 export interface IBillDao {
   getOneById: (id: string) => Promise<Result<IBill>>;
@@ -105,55 +106,69 @@ class BillDao extends OracleDB implements IBillDao {
   }
 
   public async add(billReq: IBillReq): Promise<Result<string>> {
-    try{
+    try {
+      if (!billReq.ACCOUNTID) {
+        return new Result<string>(null, "Thiếu thông tin");
+      }
       const db = this.OpenDB();
       const bill = new Bill(billReq);
       const productDao = new ProductDao();
-      if( !billReq.BILLINFOS){
-        return new Result<string>(null, "Lỗi thiếu thông tin")
+      const accountInfoDao = new AccountInfoDao();
+      if (!billReq.BILLINFOS) {
+        return new Result<string>(null, "Lỗi thiếu thông tin");
       }
-      const productIds =
-        billReq.BILLINFOS.map(p=>p.PRODUCTID)??[];
+      const productIds = billReq.BILLINFOS.map((p) => p.PRODUCTID) ?? [];
       const products = (await productDao.getManyByIds(productIds)).data;
-      if(!products){
-        return new Result<string>(null, "Mã sản phẩm lỗi")
+      if (!products) {
+        return new Result<string>(null, "Mã sản phẩm lỗi");
       }
-      const billInfos =  billReq.BILLINFOS.map(p=> {
-        const product = products.find(z=> z.ID = p.PRODUCTID)
-        if(product){
-          return  new Billinfo(
+      let total = 0;
+      const billInfos = billReq.BILLINFOS.map((p) => {
+        const product = products.find((z) => (z.ID = p.PRODUCTID));
+        if (product) {
+          total = total + p.QUANTITY * product.DISCOUNT;
+          return new Billinfo(
             bill.ID,
             p.PRODUCTID,
             p.QUANTITY,
             product.DISCOUNT
           );
-        }else{
-          return  {} as Billinfo
+        } else {
+          return {} as Billinfo;
         }
-      })
+      });
+
+      bill.TOTAL = total;
+
+      const point = total / 100;
+
       if (db) {
         const transaction = await db.transaction();
-
-          await db<Bill>(this.tableName)
-            .transacting(transaction)
-            .insert(Helper.upcaseKey(bill));
-  
-          const billInfoDao = new BillInfoDao();
-          const tmp = await billInfoDao.add(billInfos, transaction);
-          if (tmp && tmp.data) {
-            transaction.commit();
-            return new Result<string>(bill.ID);
-          } else {
-            transaction.rollback();
-            return new Result<string>(null, "Lỗi");
-          }
-       
+        await db<Bill>(this.tableName)
+          .transacting(transaction)
+          .insert(Helper.upcaseKey(bill));
+        const resultChangePoint = await accountInfoDao.changePoint(
+          billReq.ACCOUNTID,
+          point,
+          transaction
+        );
+        if(!resultChangePoint || !resultChangePoint.data){
+          return new Result<string>(null, "Lỗi");
+        }
+        const billInfoDao = new BillInfoDao();
+        const tmp = await billInfoDao.add(billInfos, transaction);
+        if (tmp && tmp.data) {
+          transaction.commit();
+          return new Result<string>(bill.ID);
+        } else {
+          transaction.rollback();
+          return new Result<string>(null, "Lỗi");
+        }
       }
       return new Result<string>(null, "connect oracle err");
-    }catch(e){
+    } catch (e) {
       return new Result<string>(null, e.message);
     }
-   
   }
 
   public async update(bill: IAccountReq): Promise<Result<IBill>> {

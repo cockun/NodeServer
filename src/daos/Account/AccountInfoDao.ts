@@ -11,41 +11,29 @@ import { callbackify } from "util";
 import RoleDao from "./Role";
 
 export interface IAccountInfoDao {
-  getOne: (data: IAccountReq) => Promise<IAccountInfo | undefined>;
+
   getAll: () => Promise<Result<IAccountInfo[]>>;
   add: (
     accountReq: IAccountReq,
     transaction: Knex.Transaction<any, any[]>
   ) => Promise<Result<number>>;
   update: (account: IAccountReq) => Promise<Result<string>>;
-
 }
 
 class AccountDao extends OracleDB implements IAccountInfoDao {
   public tableName = "ACCOUNTINFO";
 
-  public async getOne(data: IAccountReq): Promise<IAccountInfo | undefined> {
-    const db = this.OpenDB();
-    if (db) {
-      const result = await db<IAccountInfo>(this.tableName)
-        .select("*")
-        .where(Helper.upcaseKey(data))
-        .first();
-      return result;
-    }
-    return undefined;
-  }
 
-  public async getOneById(id: string): Promise<IAccountInfo | undefined> {
+  public async getById(id: string): Promise<Result<IAccountInfo>> {
     const db = this.OpenDB();
     if (db) {
       const result = await db<IAccountInfo>(this.tableName)
         .select("*")
         .where("ID", id)
         .first();
-      return result;
+      return new Result<IAccountInfo> (result);
     }
-    return undefined;
+    return new Result<IAccountInfo> (null);
   }
 
   public async getAll(): Promise<Result<IAccountInfo[]>> {
@@ -54,7 +42,7 @@ class AccountDao extends OracleDB implements IAccountInfoDao {
       const result = await db<IAccountInfo>(this.tableName).select("*");
       return new Result<IAccountInfo[]>(result);
     }
-    return new Result<IAccountInfo[]>(null,"Truy vấn lỗi");
+    return new Result<IAccountInfo[]>(null, "Truy vấn lỗi");
   }
 
   public async add(
@@ -89,27 +77,57 @@ class AccountDao extends OracleDB implements IAccountInfoDao {
   public async update(account: IAccountReq): Promise<Result<any>> {
     const db = this.OpenDB();
     if (!account.ID) {
-      return new Result<string>(null,"Thiếu thông tin");
+      return new Result<string>(null, "Thiếu thông tin");
     }
 
     if (db) {
       const transaction = await db.transaction();
       try {
-         await db<Account>(this.tableName)
+        await db<Account>(this.tableName)
           .transacting(transaction)
           .where("ID", account.ID)
           .update(Helper.upcaseKey(account));
         transaction.commit();
-        return new Result<any>({ID:account.ID});
+        return new Result<any>({ ID: account.ID });
       } catch (e) {
         transaction.rollback();
-        return new Result<string>(null,e.message);
+        return new Result<string>(null, e.message);
       }
     }
-    return new Result<string>(null,"Lỗi connect oracle");
+    return new Result<string>(null, "Lỗi connect oracle");
   }
 
-  
+  public async changePoint(
+    accountId: string,
+    point: number,
+    transaction: Knex.Transaction<any, any[]>
+  ): Promise<Result<IAccountInfo>> {
+    const db = this.OpenDB();
+    if (!accountId) {
+      return new Result<IAccountInfo>(null);
+    }
+    const accountInfo = await this.getById(accountId);
+    let pointNew = 0 ;
+    if(accountInfo && accountInfo.data){
+        pointNew = accountInfo.data?.POINTS + point;
+    }else{
+      return new Result<IAccountInfo>(null,accountInfo.err?accountInfo.err:"Lỗi")
+    }
+    if (db) {
+      try {
+        const result = await db<IAccountInfo>(this.tableName)
+          .transacting(transaction)
+          .where("ID", accountId)
+          .update({"POINTS":pointNew})
+          .returning("*")
+        return new Result<IAccountInfo>(result[1]);
+      } catch (e) {
+        transaction.rollback();
+        return new Result<IAccountInfo>(null);
+      }
+    }
+    return new Result<IAccountInfo>(null, "connect oracle err");
+  }
 }
 
 export default AccountDao;

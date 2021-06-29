@@ -4,7 +4,7 @@ import { Helper } from "src/utils/Helper";
 export interface IBill {
     ID: string;
     TOTAL : number;
-    DATEBUY : string;  
+    DATEBUY : Date;  
     FULLNAME : string;
     PHONE : string;
     ADDRESS : string;
@@ -14,7 +14,7 @@ export interface IBill {
   export class Bill implements IBill {
     public ID: string;
     public TOTAL : number;
-    public DATEBUY : string;  
+    public DATEBUY : Date;  
     public FULLNAME : string;
     public PHONE : string;
     public ADDRESS : string;
@@ -29,13 +29,13 @@ export interface IBill {
     
     ) {
         this.ID = Helper.generateUID();
-        this.TOTAL = billReq.TOTAL?billReq.TOTAL:0;
-        this.DATEBUY = billReq.DATEBUY?billReq.DATEBUY:"";
+        this.TOTAL = 0;
+        this.DATEBUY = new Date(Date.now());
         this.FULLNAME = billReq.FULLNAME?billReq.FULLNAME:"";
         this.PHONE = billReq.PHONE?billReq.PHONE:"";
         this.ADDRESS = billReq.ADDRESS?billReq.ADDRESS:"";
         this.ACCOUNTID = billReq.ACCOUNTID?billReq.ACCOUNTID:"";
-        this.BILLSTATUS = billReq.BILLSTATUS?billReq.BILLSTATUS:"";
+        this.BILLSTATUS = "";
     }
   
   }
