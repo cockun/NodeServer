@@ -113,6 +113,22 @@ class AccountDao extends OracleDB implements IAccountDao {
     return undefined;
   }
 
+
+  //login
+
+
+  public async Login(user: string,pass:string): Promise<Result<IAccount> | undefined> {
+    const db = this.OpenDB();
+    if (db) {
+      const result = await db<Account>(this.tableName)
+        .select("*")
+        .where("USERNAME", user && "PASSWORD" ,pass)
+        .first();
+      return new Result<IAccount>(result);
+    }
+    return undefined;
+  }
+
   public async getAll(): Promise<Result<IAccount[]> | undefined> {
     const db = this.OpenDB();
     if (db) {

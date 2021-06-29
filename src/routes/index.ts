@@ -7,7 +7,9 @@ import {
   addOneAccount,
   updateOneAccount,
   deleteOneAccount,
-  filter
+  filter,
+  getOneById,
+  getLogin
 } from "../controllers/AccountController";
 import {
   getAllAccountInfos,
@@ -59,7 +61,8 @@ accountRouter.get("/all", getAllAccounts);
 accountRouter.post("/add", addOneAccount);
 accountRouter.put("/update", updateOneAccount);
 accountRouter.delete("/delete/:id", deleteOneAccount);
-
+accountRouter.get("/getid/:ID", getOneById);
+accountRouter.get("/login", getLogin);
 // AccountInfo-router
 const accountInfoRouter = Router();
 accountInfoRouter.get("/all", getAllAccountInfos);

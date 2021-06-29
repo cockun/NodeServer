@@ -24,10 +24,17 @@ export async function filter(req: Request, res: Response) {
 
 
 export async function getOneById(req: Request, res: Response) {
-    const {data} = req.body;
-    const accounts = await accountDao.getOneById(data.id);
+    const {ID} = req.params;
+    const accounts = await accountDao.getOneById(ID);
     return res.status(OK).json(accounts);
 }
+
+export async function getLogin(req: Request, res: Response) {
+    const {USER,PASSWORD} = req.body;
+    const accounts = await accountDao.Login(USER,PASSWORD);
+    return res.status(OK).json(accounts);
+}
+
 
 
 
