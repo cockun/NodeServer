@@ -46,13 +46,13 @@ class AccountDao extends OracleDB implements IAccountDao {
 
       if (accountReq.FULLNAME) {
         tmp = db<IAccountRes>("ACCOUNTINFO").select("*");
-        tmp.where("FULLNAME", "like", `%${""}%`);
+        tmp.where("FULLNAME", "like", `%${accountReq.FULLNAME}%`);
       } else {
         if (accountReq.USERNAME) {
           tmp = db<IAccountRes>(this.tableName).select("*");
           tmp.where("USERNAME", "like", `%@${accountReq.USERNAME}%`);
         }
-        tmp = db<IAccountRes>("ACCOUNTINFO").select("*");
+        tmp = db<IAccountRes>("ACCOUNTS").select("*");
       }
 
       if (accountReq.ORDERBYNAME) {
@@ -74,17 +74,18 @@ class AccountDao extends OracleDB implements IAccountDao {
       if (accountReq.FULLNAME) {
         tmp.join("ACCOUNTS", { "ACCOUNTS.ID": "ACCOUNTID" });
       } else {
-        tmp.join("ACCOUNTINFOS", { "ACCOUNTS.ID": "ACCOUNTID" });
+        tmp.join("ACCOUNTINFO", { "ACCOUNTS.ID": "ACCOUNTINFO.ACCOUNTID" });
       }
+      tmp.join("ROLE",{"ROLEID":"ROLE.ID"})
       const result = await tmp;
       const result2 = result.map((p) => {
         return new AccountRes(
-          p.ID,
+          p.ACCOUNTID,
           p.USERNAME,
           p.FULLNAME,
           p.ADDRESS,
           p.PHONE,
-          p.ROLE,
+          p.ROLENAME,
           p.POINTS,
           p.CREATEDATE
         );
@@ -120,12 +121,12 @@ class AccountDao extends OracleDB implements IAccountDao {
 
       if (result) {
         const accountRes = new AccountRes(
-          result.ID,
+          result.ACCOUNTID,
           result.USERNAME,
           result.FULLNAME,
           result.ADDRESS,
           result.PHONE,
-          result.ROLE,
+          result.ROLENAME,
           result.POINTS,
           result.CREATEDATE
         );
