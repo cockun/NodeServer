@@ -3,8 +3,6 @@ import { Request, Response } from 'express';
 
 import BillDao from '@daos/Bill/BillDao';
 import { paramMissingError } from '@shared/constants';
-import { format } from 'morgan';
-
     
 const billDao = new BillDao();
 

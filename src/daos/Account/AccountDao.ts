@@ -19,9 +19,7 @@ export interface IAccountDao {
 class AccountDao extends OracleDB implements IAccountDao {
   public tableName = "ACCOUNTS";
 
-  public async getByUser(
-    user: string
-  ): Promise<Result<IAccount>> {
+  public async getByUser(user: string): Promise<Result<IAccount>> {
     const db = this.OpenDB();
     if (db) {
       const result = await db<Account>(this.tableName)
@@ -30,12 +28,10 @@ class AccountDao extends OracleDB implements IAccountDao {
         .first();
       return new Result<IAccount>(result);
     }
-    return new Result<IAccount>(null,"User không tồn tại");
+    return new Result<IAccount>(null, "User không tồn tại");
   }
 
-  public async filter(
-    accountReq: IAccountReq
-  ): Promise<Result<IAccountReq[]> | undefined> {
+  public async filter(accountReq: IAccountReq): Promise<Result<IAccountReq[]>> {
     const db = this.OpenDB();
 
     if (!accountReq.PAGEINDEX) {
@@ -111,20 +107,34 @@ class AccountDao extends OracleDB implements IAccountDao {
     return undefined;
   }
 
-
   //login
 
-
-  public async Login(user: string,pass:string): Promise<Result<IAccount> | undefined> {
+  public async Login(accountReq: IAccountReq): Promise<Result<IAccountRes>> {
     const db = this.OpenDB();
     if (db) {
-      const result = await db<Account>(this.tableName)
+      const result = await db<IAccountRes>(this.tableName)
         .select("*")
-        .where("USERNAME", user && "PASSWORD" ,pass)
+        .where(accountReq)
+        .join<IAccountRes>("ACCOUNTINFO", { "ACCOUNTINFO.ACCOUNTID": "ACCOUNTS.ID" })
         .first();
-      return new Result<IAccount>(result);
+      
+      if (result) {
+        const accountRes = new AccountRes(
+          result.ID,
+          result.USERNAME,
+          result.FULLNAME,
+          result.ADDRESS,
+          result.PHONE,
+          result.ROLE,
+          result.POINTS,
+          result.CREATEDATE
+        );
+        return new Result<IAccountRes>(accountRes);
+      }
+      return new Result<IAccountRes>(null);
+    
     }
-    return undefined;
+    return new Result<IAccountRes>(null);
   }
 
   public async getAll(): Promise<Result<IAccount[]> | undefined> {
@@ -192,8 +202,6 @@ class AccountDao extends OracleDB implements IAccountDao {
     }
     return new Result<IAccount>(null, "connect oracle err");
   }
-
- 
 
   public async delete(id: string): Promise<void> {
     const db = this.OpenDB();

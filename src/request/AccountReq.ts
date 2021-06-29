@@ -30,7 +30,6 @@ export class AccountReq implements IAccountReq {
   public ORDERBYNAME?:string;
 
   
-
-
+  
 
 }
