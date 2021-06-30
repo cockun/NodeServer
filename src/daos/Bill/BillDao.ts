@@ -142,7 +142,7 @@ class BillDao extends OracleDB implements IBillDao {
       const billInfos = billReq.BILLINFOS.map((p) => {
         const product = products.find((z) => (z.ID = p.PRODUCTID));
         if (product) {
-          total = total + p.QUANTITY * product.DISCOUNT;
+         
           return new Billinfo(
             bill.ID,
             p.PRODUCTID,
@@ -153,7 +153,9 @@ class BillDao extends OracleDB implements IBillDao {
           return {} as Billinfo;
         }
       });
-
+      billInfos.forEach(p=>{
+        total = total + p.QUANTITY * p.PRICE;
+      })
       bill.TOTAL = total;
 
       if (db) {
