@@ -72,7 +72,7 @@ class AccountDao extends OracleDB implements IAccountInfoDao {
       try {
         await db<Account>(this.tableName)
           .transacting(transaction)
-          .where("ID", account.ID)
+          .where("ACCOUNTID", account.ID)
           .update(Helper.upcaseKey(account));
         transaction.commit();
         return new Result<any>({ ID: account.ID });

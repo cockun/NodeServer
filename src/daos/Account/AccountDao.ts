@@ -44,16 +44,25 @@ class AccountDao extends OracleDB implements IAccountDao {
     if (db) {
       let tmp;
 
+      
       if (accountReq.FULLNAME) {
-        tmp = db<IAccountRes>("ACCOUNTINFO").select("*");
-        tmp.where("FULLNAME", "like", `%${accountReq.FULLNAME}%`);
+        tmp = db<IAccountRes>("ACCOUNTINFO");
+        tmp.whereRaw(`LOWER(FULLNAME) LIKE ?`, [
+          `%${accountReq.FULLNAME.toLowerCase()}%`,
+        ]);
       } else {
         if (accountReq.USERNAME) {
-          tmp = db<IAccountRes>(this.tableName).select("*");
-          tmp.where("USERNAME", "like", `%@${accountReq.USERNAME}%`);
+          tmp = db<IAccountRes>(this.tableName);
+          tmp.whereRaw(`LOWER(USERNAME) LIKE ?`, [
+            `%${accountReq.USERNAME.toLowerCase()}%`,
+          ]);
         }
-        tmp = db<IAccountRes>("ACCOUNTS").select("*");
+        tmp = db<IAccountRes>("ACCOUNTS");
       }
+
+      const countQuery = tmp.clone();
+      const { COUNT } = await countQuery.count("* AS COUNT").first() as any;
+
 
       if (accountReq.ORDERBYNAME) {
         if (accountReq.ORDERBYASC != undefined) {
@@ -77,7 +86,7 @@ class AccountDao extends OracleDB implements IAccountDao {
         tmp.join("ACCOUNTINFO", { "ACCOUNTS.ID": "ACCOUNTINFO.ACCOUNTID" });
       }
       tmp.join("ROLE",{"ROLEID":"ROLE.ID"})
-      const result = await tmp;
+      const result = await tmp.select("*");
       const result2 = result.map((p) => {
         return new AccountRes(
           p.ACCOUNTID,
@@ -91,7 +100,7 @@ class AccountDao extends OracleDB implements IAccountDao {
         );
       });
 
-      return new Result<IAccountRes[]>(result2);
+      return new Result<IAccountRes[]>(result2,"",COUNT);
     }
     return new Result<IAccountRes[]>([], "");
   }
