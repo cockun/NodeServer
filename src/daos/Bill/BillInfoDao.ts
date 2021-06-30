@@ -32,7 +32,7 @@ class BillInfoDao extends OracleDB implements IBillInfoDao {
     if (db) {
       const result = await db<IBillinfo>(this.tableName)
         .select("*")
-        .where("ID", id);
+        .where("BILLID", id);
 
       return new Result<IBillinfo[]>(result);
     }

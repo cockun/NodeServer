@@ -105,14 +105,15 @@ class BillDao extends OracleDB implements IBillDao {
       const bill = await tmp.select("*");
       const billInfoDao = new BillInfoDao();
       if (bill) {
-        bill.map(async (p) => {
-          const tmp = (await billInfoDao.getByIdBill(p.ID)).data;
+        for (let i = 0 ; i < bill.length ; ++ i ){
+          const tmp = (await billInfoDao.getByIdBill( bill[i].ID)).data;
           if (tmp) {
-            p.BILLINFOS = tmp;
+            bill[i].BILLINFOS  = tmp;
           } else {
-            p.BILLINFOS = [];
+            bill[i].BILLINFOS = [];
           }
-        });
+        }
+       
       }
 
       return new Result<BillRes[]>(bill,"",COUNT);
