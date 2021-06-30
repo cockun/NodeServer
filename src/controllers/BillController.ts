@@ -29,8 +29,8 @@ export async function filterBills(req: Request, res: Response) {
             error: paramMissingError,
         });
     }
-    await billDao.filter(data);
-    return res.status(CREATED).end();
+    const result = await billDao.filter(data);
+    return res.status(OK).json(result);
 }
 
 
