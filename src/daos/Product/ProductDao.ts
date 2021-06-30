@@ -68,11 +68,15 @@ class ProductDao extends OracleDB implements IProductDao {
     }
 
     if (db) {
-      const tmp = db<IProduct>(this.tableName).select("*");
+      const tmp = db<IProduct>(this.tableName);
 
       if (productReq.NAME) {
-        tmp.where("NAME", "like", `%@${productReq.NAME}%`);
+        tmp.whereRaw(`LOWER(NAME) LIKE ?`, [
+          `%${productReq.NAME.toLowerCase()}%`,
+        ]);
       }
+      const countQuery = tmp.clone();
+      const { COUNT } = await countQuery.count("* AS COUNT").first() as any;
 
       if (productReq.ORDERBYNAME) {
         if (productReq.ORDERBYASC != undefined) {
@@ -89,7 +93,9 @@ class ProductDao extends OracleDB implements IProductDao {
       tmp
         .limit(productReq.PAGESIZE)
         .offset((productReq.PAGEINDEX - 1) * productReq.PAGESIZE);
-      const result = await tmp;
+
+
+      const result = await tmp.select("*");
       const categoryIds = [...new Set(result.map((p) => p.CATEGORYID))];
       const categoryDao = new CategoryDao();
       const categories = await categoryDao.getManyByIds(categoryIds);
@@ -103,7 +109,7 @@ class ProductDao extends OracleDB implements IProductDao {
         }
       });
 
-      return new Result<IProductRes[]>(productRes);
+      return new Result<IProductRes[]>(productRes, "",COUNT);
     }
     return new Result<IProductRes[]>([], "");
   }
@@ -171,17 +177,14 @@ class ProductDao extends OracleDB implements IProductDao {
       return new Result<IProductRes>(null);
     }
     if (db) {
-      let soldNew =0; 
+      let soldNew = 0;
       try {
-
         const product = await this.getById(proudctId);
-        if(product && product.data){
+        if (product && product.data) {
           soldNew = product.data.SOLD + sold;
-        }else{
-          return new Result<IProductRes>(null,"productId không tồn tại");
+        } else {
+          return new Result<IProductRes>(null, "productId không tồn tại");
         }
-      
-
 
         const result = await db<IProductRes>(this.tableName)
           .transacting(transaction)
@@ -191,7 +194,7 @@ class ProductDao extends OracleDB implements IProductDao {
 
         return new Result<IProductRes>(result[1]);
       } catch (e) {
-       transaction.rollback();
+        transaction.rollback();
         return new Result<IProductRes>(null);
       }
     }
