@@ -51,7 +51,16 @@ export async function addOneBill(req: Request, res: Response) {
     const bill = await billDao.add(data);
     return res.status(CREATED).json(bill);
 }
-
+export async function GetManyById(req: Request, res: Response) {
+    const { data } = req.body;
+    if (!data) {
+        return res.status(BAD_REQUEST).json({
+            error: paramMissingError,
+        });
+    }
+    const bill = await billDao.getManyById(data.ACCOUNTID);
+    return res.status(CREATED).json(bill);
+}
 
 /**
  * Update one product.

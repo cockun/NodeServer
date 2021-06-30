@@ -40,6 +40,19 @@ class BillDao extends OracleDB implements IBillDao {
     return new Result<IBill>(null);
   }
 
+  // get bill with accountid
+
+  public async getManyById(id: string): Promise<Result<IBill[]>> {
+    const db = this.OpenDB();
+    if (db) {
+      const result = await db<IBill>(this.tableName)
+        .select("*")
+        .where("ACCOUNTID", id);
+      return new Result<IBill[]>(result);
+    }
+    return new Result<IBill[]>(null, "Lỗi");
+  }
+
   public async getAll(): Promise<Result<IBill[]>> {
     const db = this.OpenDB();
     if (db) {

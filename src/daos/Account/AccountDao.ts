@@ -117,7 +117,7 @@ class AccountDao extends OracleDB implements IAccountDao {
         .select("*")
         .where(accountReq)
         .join<IAccountRes>("ACCOUNTINFO", { "ACCOUNTINFO.ACCOUNTID": "ACCOUNTS.ID" })
-        .join<IAccountRes>("ROLE", { "ROLE.ID": "ACCOUNTS.ID" })
+        .join<IAccountRes>("ROLE", { "ROLE.ID": "ACCOUNTINFO.ROLEID" })
         .first();
         //aa
       if (result) {
@@ -168,7 +168,7 @@ class AccountDao extends OracleDB implements IAccountDao {
         const result = await accountInfoDao.add(accountReq, transaction);
         if (result && result.data) {
           transaction.commit();
-          return new Result<string>(account.ID);
+          return new Result<string>('Success');
         } else {
           transaction.rollback();
           return new Result<string>(null, result.err ? result.err : "Error");

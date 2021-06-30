@@ -27,6 +27,7 @@ import {
   getAllBills,
   addOneBill,
   updateOneBill,
+  GetManyById
 } from "../controllers/BillController";
 
 import {
@@ -75,7 +76,9 @@ billRouter.get("/all", getAllBills);
 billRouter.post("/add", addOneBill);
 billRouter.put("/update", updateOneBill);
 billRouter.delete("/delete/:id", updateOneBill);
+billRouter.get("/getmany", GetManyById);
 
+//
 const categoryRouter = Router();
 categoryRouter.get("/all", getCategoryById);
 categoryRouter.post("/add", addOneCategory);
