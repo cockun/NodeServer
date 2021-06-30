@@ -22,7 +22,7 @@ export async function getAllBills(req: Request, res: Response) {
     return res.status(OK).json(bills);
 }
 
-export async function filter(req: Request, res: Response) {
+export async function filterBills(req: Request, res: Response) {
     const data = req.query;
     if (!data) {
         return res.status(BAD_REQUEST).json({

@@ -74,7 +74,7 @@ class BillDao extends OracleDB implements IBillDao {
     }
 
     if (db) {
-      const tmp = db<BillRes>(this.tableName).select("*");
+      const tmp = db<BillRes>(this.tableName);
 
       if (billReq.ACCOUNTID) {
         tmp.where("ACCOUNTID", billReq.ACCOUNTID);
@@ -85,7 +85,8 @@ class BillDao extends OracleDB implements IBillDao {
           .where("DATEBUY", "<", billReq.TODATE)
           .where("DATEBUY", ">", billReq.FROMDATE);
       }
-
+      const countQuery = tmp.clone();
+      const { COUNT } = await countQuery.count("* AS COUNT").first() as any;
       if (billReq.ORDERBYNAME) {
         if (billReq.ORDERBYASC != undefined) {
           tmp.orderBy([
@@ -101,7 +102,7 @@ class BillDao extends OracleDB implements IBillDao {
       tmp
         .limit(billReq.PAGESIZE)
         .offset((billReq.PAGEINDEX - 1) * billReq.PAGESIZE);
-      const bill = await tmp;
+      const bill = await tmp.select("*");
       const billInfoDao = new BillInfoDao();
       if (bill) {
         bill.map(async (p) => {
@@ -114,7 +115,7 @@ class BillDao extends OracleDB implements IBillDao {
         });
       }
 
-      return new Result<BillRes[]>(bill);
+      return new Result<BillRes[]>(bill,"",COUNT);
     }
     return new Result<BillRes[]>([], "");
   }
