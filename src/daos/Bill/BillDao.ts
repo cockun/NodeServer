@@ -142,7 +142,7 @@ class BillDao extends OracleDB implements IBillDao {
       }
       let total = 0;
       const billInfos = billReq.BILLINFOS.map((p) => {
-        const product = products.find((z) => (z.ID = p.PRODUCTID));
+        const product = products.find((z) => (z.ID === p.PRODUCTID));
         if (product) {
          
           return new Billinfo(
