@@ -10,7 +10,7 @@ export interface IAccountReq {
   ROLE?:string;
   SEX? : string;
   EMAIL?:string;
-  BIRTHDAY?: Date;
+  BIRTHDAY?:  Date | string;
   PAGEINDEX?:number;
   PAGESIZE?:number;
   ORDERBYASC?: boolean;
@@ -29,7 +29,7 @@ export class AccountReq implements IAccountReq {
   public ROLE?:string;
   public SEX? : string;
   public EMAIL?:string;
-  public  BIRTHDAY?: Date;
+  public  BIRTHDAY?: Date | string;
   public PAGEINDEX?:number;
   public PAGESIZE?:number;
   public ORDERBYASC?: boolean;

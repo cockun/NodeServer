@@ -41,7 +41,7 @@ export async function coc(req: Request, res: Response) {
     const accountDao = new AccountDao();
     const billDao = new BillDao();
     const productDao = new ProductDao();
-    
+
     let productIds;
     const products = await productDao.getAll();
     if (products.data) {
@@ -50,7 +50,7 @@ export async function coc(req: Request, res: Response) {
       return;
     }
 
-    for (let i = 0; i < 100000; ++i) {
+    for (let i = 5; i < 2000000; ++i) {
       const randomFirstName = getRandomInt(0, firstNameArr.length - 1);
       const randomAddressArr = getRandomInt(0, addressArr.length - 1);
       const randomNamesArr = getRandomInt(0, namesArr.length - 1);
@@ -60,10 +60,10 @@ export async function coc(req: Request, res: Response) {
       const fullName = firstName + " " + name;
       const randomProductId =
         productIds[getRandomInt(0, productIds.length - 1)];
-      const randomBill = getRandomInt(1, 3);
+      const randomBill = getRandomInt(1, 4);
 
       let sex: string;
-      const randomSex = getRandomInt(1, 2);
+      const randomSex = getRandomInt(1, 3);
       if (randomSex === 1) {
         sex = "Nam";
       } else {
@@ -99,7 +99,7 @@ export async function coc(req: Request, res: Response) {
         }
 
         const billReq = new BillReq();
-
+        billReq.DATEBUY = new Date(2021, 6, getRandomInt(1, 30));
         billReq.ACCOUNTID = accountId ?? "";
         billReq.FULLNAME = fullName;
         billReq.PHONE = accountReq.PHONE;

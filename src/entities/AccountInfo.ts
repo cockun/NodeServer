@@ -38,8 +38,10 @@ export class AccountInfo implements IAccountInfo {
     this.POINTS = 0;
     this.ROLEID = accountReq.ROLE ?? "";
     this.CREATEDATE = new Date(Date.now());
-    this.SEX = accountReq.SEX??"NAM";
-    this.EMAIL = accountReq.EMAIL??"";
-    this.BIRTHDAY = accountReq.BIRTHDAY??new Date( 1995, 1, 1);
+    this.SEX = accountReq.SEX ?? "NAM";
+    this.EMAIL = accountReq.EMAIL ?? "";
+    this.BIRTHDAY = new Date(
+      accountReq.BIRTHDAY ?? new Date(1995, 1, 1).toJSON()
+    );
   }
 }

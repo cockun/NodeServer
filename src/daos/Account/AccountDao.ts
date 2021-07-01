@@ -15,7 +15,7 @@ export interface IAccountDao {
   update: (account: IAccountReq) => Promise<Result<IAccount>>;
   delete: (id: string) => Promise<void>;
 }
-
+const accountInfoDao = new AccountInfoDao();
 class AccountDao extends OracleDB implements IAccountDao {
   public tableName = "ACCOUNTS";
 
@@ -172,7 +172,7 @@ class AccountDao extends OracleDB implements IAccountDao {
     } else {
       return new Result<string>(null, "Vui lòng nhập đủ thông tin");
     }
-    const accountInfoDao = new AccountInfoDao();
+ 
     if (db) {
       const transaction = await db.transaction();
       try {
