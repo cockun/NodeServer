@@ -8,12 +8,13 @@ import { ICategory } from "../../entities/Categories";
 import { IProductRes, ProductRes } from "../../response/ProductRes";
 import CategoryDao from "../Categories.ts/CategoryDao";
 import { Knex } from "knex";
+import { ProductUpdateReq } from "../../request/ProductUpdateReq";
 
 export interface IProductDao {
   getAll: () => Promise<Result<IProductRes[]> | undefined>;
   add: (product: IProdctReq) => Promise<Result<string>>;
-  update: (product: IProdctReq) => Promise<Result<IProductRes>>;
-  delete: (id: string) => Promise<void>;
+  update: (product: IProdctReq) => Promise<Result<string>>;
+  delete: (id: string) => Promise<Result<string>>;
 }
 
 class ProductDao extends OracleDB implements IProductDao {
@@ -76,7 +77,7 @@ class ProductDao extends OracleDB implements IProductDao {
         ]);
       }
       const countQuery = tmp.clone();
-      const { COUNT } = await countQuery.count("* AS COUNT").first() as any;
+      const { COUNT } = (await countQuery.count("* AS COUNT").first()) as any;
 
       if (productReq.ORDERBYNAME) {
         if (productReq.ORDERBYASC != undefined) {
@@ -94,7 +95,6 @@ class ProductDao extends OracleDB implements IProductDao {
         .limit(productReq.PAGESIZE)
         .offset((productReq.PAGEINDEX - 1) * productReq.PAGESIZE);
 
-
       const result = await tmp.select("*");
       const categoryIds = [...new Set(result.map((p) => p.CATEGORYID))];
       const categoryDao = new CategoryDao();
@@ -109,7 +109,7 @@ class ProductDao extends OracleDB implements IProductDao {
         }
       });
 
-      return new Result<IProductRes[]>(productRes, "",COUNT);
+      return new Result<IProductRes[]>(productRes, "", COUNT);
     }
     return new Result<IProductRes[]>([], "");
   }
@@ -144,27 +144,32 @@ class ProductDao extends OracleDB implements IProductDao {
     return new Result<string>(null, "connect oracle err");
   }
 
-  public async update(productReq: IProdctReq): Promise<Result<IProductRes>> {
+  public async update(productReq: IProdctReq): Promise<Result<string>> {
     const db = this.OpenDB();
     if (!productReq.ID) {
-      return new Result<IProductRes>(null);
+      return new Result<string>(null);
     }
+    const productUpdateReq = new ProductUpdateReq(productReq);
     if (db) {
       const transaction = await db.transaction();
       try {
         const result = await db<IProductRes>(this.tableName)
           .transacting(transaction)
+
           .where("ID", productReq.ID)
-          .update(Helper.upcaseKey(productReq))
-          .returning("*");
+          .update(productUpdateReq);
+
         transaction.commit();
-        return new Result<IProductRes>(result[1]);
+        if(result > 0 ){
+          return new Result<string>(productReq.ID);
+        }
+        return new Result<string>(null);
       } catch (e) {
         transaction.rollback();
-        return new Result<IProductRes>(null);
+        return new Result<string>(null);
       }
     }
-    return new Result<IProductRes>(null, "connect oracle err");
+    return new Result<string>(null, "connect oracle err");
   }
 
   public async changeSold(
@@ -201,18 +206,19 @@ class ProductDao extends OracleDB implements IProductDao {
     return new Result<IProductRes>(null, "connect oracle err");
   }
 
-  public async delete(id: string): Promise<void> {
+  public async delete(id: string): Promise<Result<string>> {
     const db = this.OpenDB();
 
     if (db) {
-      const transaction = await db.transaction();
       try {
         await db(this.tableName).where("ID", id).del();
-        transaction.commit();
+
+        return new Result<string>(id);
       } catch (e) {
-        transaction.rollback();
+        return new Result<string>(null, "Lỗi");
       }
     }
+    return new Result<string>(null, "Lỗi");
   }
 }
 

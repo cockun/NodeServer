@@ -82,6 +82,6 @@ export async function updateOneProduct(req: Request, res: Response) {
  */
 export async function deleteOneProduct(req: Request, res: Response) {
     const { id } = req.params;
-    await productDao.delete(id);
+    const result = await productDao.delete(id);
     return res.status(OK).end();
 }
