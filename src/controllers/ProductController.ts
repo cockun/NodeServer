@@ -68,8 +68,8 @@ export async function updateOneProduct(req: Request, res: Response) {
         });
     }
   
-    await productDao.update(data);
-    return res.status(OK).end();
+    const result =  await productDao.update(data);
+    return res.status(OK).json(result);
 }
 
 
