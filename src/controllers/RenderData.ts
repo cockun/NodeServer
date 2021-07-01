@@ -41,6 +41,7 @@ export async function coc(req: Request, res: Response) {
     const accountDao = new AccountDao();
     const billDao = new BillDao();
     const productDao = new ProductDao();
+    
     let productIds;
     const products = await productDao.getAll();
     if (products.data) {
@@ -49,7 +50,7 @@ export async function coc(req: Request, res: Response) {
       return;
     }
 
-    for (let i = 0; i < 10; ++i) {
+    for (let i = 0; i < 100000; ++i) {
       const randomFirstName = getRandomInt(0, firstNameArr.length - 1);
       const randomAddressArr = getRandomInt(0, addressArr.length - 1);
       const randomNamesArr = getRandomInt(0, namesArr.length - 1);
