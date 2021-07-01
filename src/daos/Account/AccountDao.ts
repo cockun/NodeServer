@@ -138,8 +138,12 @@ class AccountDao extends OracleDB implements IAccountDao {
           result.PHONE,
           result.ROLENAME,
           result.POINTS,
-          result.CREATEDATE
+          result.CREATEDATE,
+          result.SEX,
+          result.EMAIL,
+          result.BIRTHDAY,
         );
+
         return new Result<IAccountRes>(accountRes);
       }
       return new Result<IAccountRes>(null);
