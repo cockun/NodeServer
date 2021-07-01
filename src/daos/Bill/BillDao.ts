@@ -148,6 +148,7 @@ class BillDao extends OracleDB implements IBillDao {
           return new Billinfo(
             bill.ID,
             p.PRODUCTID,
+            product.NAME,
             p.QUANTITY,
             product.DISCOUNT
           );

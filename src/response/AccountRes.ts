@@ -20,6 +20,7 @@ export class AccountRes implements IAccountRes {
   public ROLENAME?: string;
   public POINTS?: number;
   public CREATEDATE?: Date;
+  
 
   constructor(
     ID?: string,

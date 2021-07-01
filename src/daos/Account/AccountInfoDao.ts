@@ -66,7 +66,7 @@ class AccountDao extends OracleDB implements IAccountInfoDao {
     if (!account.ID) {
       return new Result<string>(null, "Thiếu thông tin");
     }
-
+    
     if (db) {
       const transaction = await db.transaction();
       try {
