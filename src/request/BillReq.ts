@@ -1,4 +1,5 @@
-import { Billinfo } from "../entities/Billinfo";
+import { BillInfo } from "../entities/Billinfo";
+import { BillinfoReq } from "./BillInfoReq";
 
 export interface IBillReq {
 
@@ -10,7 +11,7 @@ export interface IBillReq {
     ADDRESS?: string;
     ACCOUNTID?: string;
     BILLSTATUS? : string
-    BILLINFOS? : Billinfo[]
+    BILLINFOS? : BillinfoReq[]
     PAGEINDEX?:number;
     PAGESIZE?:number;
     ORDERBYASC?: boolean;
@@ -28,7 +29,7 @@ export class BillReq implements IBillReq {
     public ADDRESS?: string;
     public ACCOUNTID?: string;
     public BILLSTATUS? : string;
-    public BILLINFOS? : Billinfo[]
+    public BILLINFOS? : BillinfoReq[]
     public PAGEINDEX?:number;
     public PAGESIZE?:number;
     public ORDERBYASC?: boolean;

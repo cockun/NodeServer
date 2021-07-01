@@ -141,7 +141,11 @@ class AccountDao extends OracleDB implements IAccountDao {
           result.CREATEDATE,
           result.SEX,
           result.EMAIL,
+<<<<<<< HEAD
           result.BIRTHDAY,
+=======
+          result.BIRTHDAY
+>>>>>>> e0b1bebde43e9b461294fda22c674bc70fb3d0ab
         );
 
         return new Result<IAccountRes>(accountRes);
@@ -177,11 +181,11 @@ class AccountDao extends OracleDB implements IAccountDao {
       try {
         await db<Account>(this.tableName)
           .transacting(transaction)
-          .insert(Helper.upcaseKey(account));
+          .insert(account);
         const result = await accountInfoDao.add(accountReq, transaction);
         if (result && result.data) {
           transaction.commit();
-          return new Result<string>('Success');
+          return new Result<string>(account.ID);
         } else {
           transaction.rollback();
           return new Result<string>(null, result.err ? result.err : "Error");

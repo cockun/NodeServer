@@ -1,36 +1,17 @@
 import { Helper } from "../utils/Helper";
 
-export interface IBillinfo {
-   
-    BILLID  : string;
-    PRODUCTID  : string;  
-    QUANTITY  : number;
-    
-  }
+export interface IBillinfoReq {
 
-  export class Billinfo implements IBillinfo {
+  PRODUCTID: string;
+  QUANTITY: number;
+}
 
-    public BILLID : string;
-    public PRODUCTID : string;  
-    public QUANTITY : number;
-  
-  
-  
-    constructor(
-      
-      BillID  : string,
-      ProductID  : string, 
-      Quantity  : number,
-     
-    
-    
-    ) {
-    
-      this.BILLID = BillID;
-      this.PRODUCTID= ProductID;
-      this.QUANTITY= Quantity;
-    
-    
-      }
-  
+export class BillinfoReq implements IBillinfoReq {
+  public PRODUCTID: string;
+  public QUANTITY: number;
+
+  constructor(ProductID: string, Quantity: number) {
+    this.PRODUCTID = ProductID;
+    this.QUANTITY = Quantity;
   }
+}

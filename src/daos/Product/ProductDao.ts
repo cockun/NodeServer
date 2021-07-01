@@ -114,14 +114,14 @@ class ProductDao extends OracleDB implements IProductDao {
     return new Result<IProductRes[]>([], "");
   }
 
-  public async getAll(): Promise<Result<IProductRes[]> | undefined> {
+  public async getAll(): Promise<Result<IProductRes[]>> {
     const db = this.OpenDB();
     if (db) {
       const result = await db<IProductRes>(this.tableName).select("*");
 
       return new Result<IProductRes[]>(result);
     }
-    return undefined;
+    return new Result<IProductRes[]>([]);
   }
 
   public async add(productReq: IProdctReq): Promise<Result<string>> {
@@ -160,7 +160,7 @@ class ProductDao extends OracleDB implements IProductDao {
           .update(productUpdateReq);
 
         transaction.commit();
-        if(result > 0 ){
+        if (result > 0) {
           return new Result<string>(productReq.ID);
         }
         return new Result<string>(null);
@@ -176,10 +176,10 @@ class ProductDao extends OracleDB implements IProductDao {
     proudctId: string,
     sold: number,
     transaction: Knex.Transaction<any, any[]>
-  ): Promise<Result<IProductRes>> {
+  ): Promise<Result<number>> {
     const db = this.OpenDB();
     if (!proudctId) {
-      return new Result<IProductRes>(null);
+      return new Result<number>(null);
     }
     if (db) {
       let soldNew = 0;
@@ -188,22 +188,21 @@ class ProductDao extends OracleDB implements IProductDao {
         if (product && product.data) {
           soldNew = product.data.SOLD + sold;
         } else {
-          return new Result<IProductRes>(null, "productId không tồn tại");
+          return new Result<number>(null, "productId không tồn tại");
         }
 
-        const result = await db<IProductRes>(this.tableName)
+        const result = await db<number>(this.tableName)
           .transacting(transaction)
           .where("ID", proudctId)
-          .update("SOLD", soldNew)
-          .returning("*");
+          .update("SOLD", soldNew);
 
-        return new Result<IProductRes>(result[1]);
+        return new Result<number>(result);
       } catch (e) {
         transaction.rollback();
-        return new Result<IProductRes>(null);
+        return new Result<number>(null);
       }
     }
-    return new Result<IProductRes>(null, "connect oracle err");
+    return new Result<number>(null, "connect oracle err");
   }
 
   public async delete(id: string): Promise<Result<string>> {
