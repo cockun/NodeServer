@@ -59,6 +59,7 @@ export async function coc(req: Request, res: Response) {
       const fullName = firstName + " " + name;
       const randomProductId =
         productIds[getRandomInt(0, productIds.length - 1)];
+      const randomBill = getRandomInt(1, 3);
 
       let sex: string;
       const randomSex = getRandomInt(1, 2);
@@ -84,27 +85,29 @@ export async function coc(req: Request, res: Response) {
 
       const accountId = (await accountDao.add(accountReq)).data;
 
-      const billInfoReqs: BillinfoReq[] = [];
+      for (let i = 0; i < randomBill; ++i) {
+        const billInfoReqs: BillinfoReq[] = [];
 
-      const randomBillInfo = getRandomInt(1, 3);
-      for (let i = 0; i < randomBillInfo; ++i) {
-        const billInfoReq = new BillinfoReq(
-          randomProductId,
-          getRandomInt(1, 3)
-        );
-        billInfoReqs.push(billInfoReq);
+        const randomBillInfo = getRandomInt(1, 3);
+        for (let i = 0; i < randomBillInfo; ++i) {
+          const billInfoReq = new BillinfoReq(
+            randomProductId,
+            getRandomInt(1, 3)
+          );
+          billInfoReqs.push(billInfoReq);
+        }
+
+        const billReq = new BillReq();
+
+        billReq.ACCOUNTID = accountId ?? "";
+        billReq.FULLNAME = fullName;
+        billReq.PHONE = accountReq.PHONE;
+        billReq.ADDRESS = accountReq.ADDRESS;
+        billReq.BILLSTATUS = "Hoàn thành";
+        billReq.BILLINFOS = billInfoReqs;
+
+        const billId = await billDao.add(billReq);
       }
-
-      const billReq = new BillReq();
-
-      billReq.ACCOUNTID = accountId ?? "";
-      billReq.FULLNAME = fullName;
-      billReq.PHONE = accountReq.PHONE;
-      billReq.ADDRESS = accountReq.ADDRESS;
-      billReq.BILLSTATUS = "Hoàn thành";
-      billReq.BILLINFOS = billInfoReqs;
-
-      const billId = await billDao.add(billReq);
     }
   } catch (e) {
     console.log("Error:", e.stack);
