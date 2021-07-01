@@ -10,7 +10,7 @@ import { callbackify } from "util";
 import { IProdctReq } from "src/request/ProductReq";
 import { BillReq, IBillReq } from "src/request/BillReq";
 import ProductDao from "../Product/ProductDao";
-import { Billinfo } from "../../entities/Billinfo";
+import { BillInfo } from "../../entities/Billinfo";
 import BillInfoDao from "./BillInfoDao";
 import { BillRes } from "../../response/BillRes";
 import AccountInfoDao from "../Account/AccountInfoDao";
@@ -86,7 +86,7 @@ class BillDao extends OracleDB implements IBillDao {
           .where("DATEBUY", ">", billReq.FROMDATE);
       }
       const countQuery = tmp.clone();
-      const { COUNT } = await countQuery.count("* AS COUNT").first() as any;
+      const { COUNT } = (await countQuery.count("* AS COUNT").first()) as any;
       if (billReq.ORDERBYNAME) {
         if (billReq.ORDERBYASC != undefined) {
           tmp.orderBy([
@@ -105,18 +105,17 @@ class BillDao extends OracleDB implements IBillDao {
       const bill = await tmp.select("*");
       const billInfoDao = new BillInfoDao();
       if (bill) {
-        for (let i = 0 ; i < bill.length ; ++ i ){
-          const tmp = (await billInfoDao.getByIdBill( bill[i].ID)).data;
+        for (let i = 0; i < bill.length; ++i) {
+          const tmp = (await billInfoDao.getByIdBill(bill[i].ID)).data;
           if (tmp) {
-            bill[i].BILLINFOS  = tmp;
+            bill[i].BILLINFOS = tmp;
           } else {
             bill[i].BILLINFOS = [];
           }
         }
-       
       }
 
-      return new Result<BillRes[]>(bill,"",COUNT);
+      return new Result<BillRes[]>(bill, "", COUNT);
     }
     return new Result<BillRes[]>([], "");
   }
@@ -131,7 +130,6 @@ class BillDao extends OracleDB implements IBillDao {
       const productDao = new ProductDao();
       bill.BILLSTATUS = "Đang xử lý";
 
-
       if (!billReq.BILLINFOS) {
         return new Result<string>(null, "Lỗi thiếu thông tin");
       }
@@ -142,10 +140,9 @@ class BillDao extends OracleDB implements IBillDao {
       }
       let total = 0;
       const billInfos = billReq.BILLINFOS.map((p) => {
-        const product = products.find((z) => (z.ID === p.PRODUCTID));
+        const product = products.find((z) => z.ID === p.PRODUCTID);
         if (product) {
-         
-          return new Billinfo(
+          return new BillInfo(
             bill.ID,
             p.PRODUCTID,
             product.NAME,
@@ -153,42 +150,47 @@ class BillDao extends OracleDB implements IBillDao {
             product.DISCOUNT
           );
         } else {
-          return {} as Billinfo;
+          return {} as BillInfo;
         }
       });
-      billInfos.forEach(p=>{
+      billInfos.forEach((p) => {
         total = total + p.QUANTITY * p.PRICE;
-      })
+      });
       bill.TOTAL = total;
 
       if (db) {
         const transaction = await db.transaction();
-        await db<Bill>(this.tableName)
-          .transacting(transaction)
-          .insert(bill);
-
-      
+        await db<Bill>(this.tableName).transacting(transaction).insert(bill);
 
         const billInfoDao = new BillInfoDao();
         const tmp = await billInfoDao.add(billInfos, transaction);
 
-        // billInfos.forEach(async (p) => {
-        //   const tmp = await productDao.changeSold(
-        //     p.PRODUCTID,
-        //     p.QUANTITY,
-        //     transaction
-        //   );
-        //   if(!tmp.data) {
-        //     return new Result<string>(null, tmp.err?tmp.err:"Lỗi");
-        //   }
-        // });
+        //SOLD
+        for ( let i = 0 ; i < billInfos.length  ; ++ i ){
+          const tmp = await productDao.changeSold(
+            billInfos[i].PRODUCTID,
+            billInfos[i].QUANTITY,
+            transaction
+          );
+          if (!tmp.data) {
+            return new Result<string>(null, tmp.err ? tmp.err : "Lỗi");
+          }
+        }
+     
 
-        if (tmp && tmp.data) {
+        const accountInfoDao = new AccountInfoDao();
+        const resultChangePoint = await accountInfoDao.changePoint(
+          bill.ACCOUNTID,
+          bill.TOTAL / 100,
+          transaction
+        );
+
+        if (tmp && tmp.data && resultChangePoint.data) {
           transaction.commit();
           return new Result<string>(bill.ID);
         } else {
           transaction.rollback();
-          return new Result<string>(null, tmp.err?tmp.err:"Lỗi");
+          return new Result<string>(null, tmp.err ? tmp.err : "Lỗi");
         }
       }
       return new Result<string>(null, "connect oracle err");
@@ -210,11 +212,11 @@ class BillDao extends OracleDB implements IBillDao {
       const transaction = await db.transaction();
       try {
         if (billReq.BILLSTATUS == "Hoàn thành") {
-          const accountInfoDao = new AccountInfoDao();
           const bill = await this.getById(billReq.ID);
           if (!bill || !bill.data) {
             return new Result<IBill>(null, "Bill không tồn tại");
           }
+          const accountInfoDao = new AccountInfoDao();
           const resultChangePoint = await accountInfoDao.changePoint(
             bill.data.ACCOUNTID,
             bill.data.TOTAL / 100,

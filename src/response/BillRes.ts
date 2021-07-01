@@ -1,6 +1,6 @@
 import { BillReq } from "src/request/BillReq";
 import { Helper } from "src/utils/Helper";
-import { IBillinfo } from "../entities/Billinfo";
+import { IBillInfo } from "../entities/Billinfo";
 
 export interface IBillRes {
     ID: string;
@@ -21,7 +21,7 @@ export interface IBillRes {
     public ADDRESS : string;
     public ACCOUNTID : string;
     public BILLSTATUS : string;  
-    public BILLINFOS: IBillinfo[];
+    public BILLINFOS: IBillInfo[];
     
   
   

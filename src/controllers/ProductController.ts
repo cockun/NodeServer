@@ -9,13 +9,7 @@ const { BAD_REQUEST, CREATED, OK } = StatusCodes;
 
 import querystring from 'querystring';
 
-/**
- * Get all Accounts.
- * 
- * @param req 
- * @param res 
- * @returns 
- */
+
 export async function getAllProducts(req: Request, res: Response) {
     const products = await productDao.getAll();
     return res.status(OK).json(products);

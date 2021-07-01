@@ -114,14 +114,14 @@ class ProductDao extends OracleDB implements IProductDao {
     return new Result<IProductRes[]>([], "");
   }
 
-  public async getAll(): Promise<Result<IProductRes[]> | undefined> {
+  public async getAll(): Promise<Result<IProductRes[]>> {
     const db = this.OpenDB();
     if (db) {
       const result = await db<IProductRes>(this.tableName).select("*");
 
       return new Result<IProductRes[]>(result);
     }
-    return undefined;
+    return new Result<IProductRes[]>([]);
   }
 
   public async add(productReq: IProdctReq): Promise<Result<string>> {
