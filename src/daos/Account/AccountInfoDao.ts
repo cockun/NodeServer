@@ -33,6 +33,19 @@ class AccountDao extends OracleDB implements IAccountInfoDao {
     return new Result<IAccountInfo> (null);
   }
 
+  
+  public async getByIdAccount(id: string): Promise<Result<IAccountInfo>> {
+    const db = this.OpenDB();
+    if (db) {
+      const result = await db<IAccountInfo>(this.tableName)
+        .select("*")
+        .where("ACCOUNTID", id)
+        .first();
+      return new Result<IAccountInfo> (result);
+    }
+    return new Result<IAccountInfo> (null);
+  }
+
   public async getAll(): Promise<Result<IAccountInfo[]>> {
     const db = this.OpenDB();
     if (db) {
@@ -88,32 +101,32 @@ class AccountDao extends OracleDB implements IAccountInfoDao {
     accountId: string,
     point: number,
     transaction: Knex.Transaction<any, any[]>
-  ): Promise<Result<IAccountInfo>> {
+  ): Promise<Result<number>> {
     const db = this.OpenDB();
     if (!accountId) {
-      return new Result<IAccountInfo>(null);
+      return new Result<number>(null);
     }
-    const accountInfo = await this.getById(accountId);
+    const accountInfo = await this.getByIdAccount(accountId);
     let pointNew = 0 ;
     if(accountInfo && accountInfo.data){
         pointNew = accountInfo.data?.POINTS + point;
     }else{
-      return new Result<IAccountInfo>(null,accountInfo.err?accountInfo.err:"Lỗi")
+      return new Result<number>(null,accountInfo.err?accountInfo.err:"Lỗi")
     }
     if (db) {
       try {
         const result = await db<IAccountInfo>(this.tableName)
           .transacting(transaction)
-          .where("ID", accountId)
+          .where("ACCOUNTID", accountId)
           .update({"POINTS":pointNew})
-          .returning("*")
-        return new Result<IAccountInfo>(result[1]);
+          
+        return new Result<number>(result);
       } catch (e) {
         transaction.rollback();
-        return new Result<IAccountInfo>(null);
+        return new Result<number>(null);
       }
     }
-    return new Result<IAccountInfo>(null, "connect oracle err");
+    return new Result<number>(null, "connect oracle err");
   }
 }
 

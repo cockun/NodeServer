@@ -177,15 +177,15 @@ class BillDao extends OracleDB implements IBillDao {
           }
         }
      
+        //Points
+        const accountInfoDao = new AccountInfoDao();
+        const resultChangePoint = await accountInfoDao.changePoint(
+          bill.ACCOUNTID,
+          bill.TOTAL / 100,
+          transaction
+        );
 
-        // const accountInfoDao = new AccountInfoDao();
-        // const resultChangePoint = await accountInfoDao.changePoint(
-        //   bill.ACCOUNTID,
-        //   bill.TOTAL / 100,
-        //   transaction
-        // );
-
-        if (tmp && tmp.data ) {
+        if (tmp && tmp.data && resultChangePoint ) {
           transaction.commit();
           return new Result<string>(bill.ID);
         } else {
