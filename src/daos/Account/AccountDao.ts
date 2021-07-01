@@ -4,7 +4,7 @@ import { AccountInfo, IAccountInfo } from "@entities/AccountInfo";
 import { Result } from "@entities/Result";
 import { AccountReq, IAccountReq } from "src/request/AccountReq";
 import { Helper } from "src/utils/Helper";
-
+import md5 from "md5";
 import { AccountRes, IAccountRes } from "../../response/AccountRes";
 import AccountInfoDao from "./AccountInfoDao";
 
@@ -44,7 +44,6 @@ class AccountDao extends OracleDB implements IAccountDao {
     if (db) {
       let tmp;
 
-      
       if (accountReq.FULLNAME) {
         tmp = db<IAccountRes>("ACCOUNTINFO");
         tmp.whereRaw(`LOWER(FULLNAME) LIKE ?`, [
@@ -61,8 +60,7 @@ class AccountDao extends OracleDB implements IAccountDao {
       }
 
       const countQuery = tmp.clone();
-      const { COUNT } = await countQuery.count("* AS COUNT").first() as any;
-
+      const { COUNT } = (await countQuery.count("* AS COUNT").first()) as any;
 
       if (accountReq.ORDERBYNAME) {
         if (accountReq.ORDERBYASC != undefined) {
@@ -85,7 +83,7 @@ class AccountDao extends OracleDB implements IAccountDao {
       } else {
         tmp.join("ACCOUNTINFO", { "ACCOUNTS.ID": "ACCOUNTINFO.ACCOUNTID" });
       }
-      tmp.join("ROLE",{"ROLEID":"ROLE.ID"})
+      tmp.join("ROLE", { ROLEID: "ROLE.ID" });
       const result = await tmp.select("*");
       const result2 = result.map((p) => {
         return new AccountRes(
@@ -100,7 +98,7 @@ class AccountDao extends OracleDB implements IAccountDao {
         );
       });
 
-      return new Result<IAccountRes[]>(result2,"",COUNT);
+      return new Result<IAccountRes[]>(result2, "", COUNT);
     }
     return new Result<IAccountRes[]>([], "");
   }
@@ -122,13 +120,17 @@ class AccountDao extends OracleDB implements IAccountDao {
   public async Login(accountReq: IAccountReq): Promise<Result<IAccountRes>> {
     const db = this.OpenDB();
     if (db) {
+      if(accountReq.PASSWORD)
+      accountReq.PASSWORD = md5(accountReq.PASSWORD);
       const result = await db<IAccountRes>(this.tableName)
         .select("*")
         .where(accountReq)
-        .join<IAccountRes>("ACCOUNTINFO", { "ACCOUNTINFO.ACCOUNTID": "ACCOUNTS.ID" })
+        .join<IAccountRes>("ACCOUNTINFO", {
+          "ACCOUNTINFO.ACCOUNTID": "ACCOUNTS.ID",
+        })
         .join<IAccountRes>("ROLE", { "ROLE.ID": "ACCOUNTINFO.ROLEID" })
         .first();
-        //aa
+      //aa
       if (result) {
         const accountRes = new AccountRes(
           result.ACCOUNTID,
@@ -141,17 +143,12 @@ class AccountDao extends OracleDB implements IAccountDao {
           result.CREATEDATE,
           result.SEX,
           result.EMAIL,
-<<<<<<< HEAD
-          result.BIRTHDAY,
-=======
           result.BIRTHDAY
->>>>>>> e0b1bebde43e9b461294fda22c674bc70fb3d0ab
         );
 
         return new Result<IAccountRes>(accountRes);
       }
       return new Result<IAccountRes>(null);
-    
     }
     return new Result<IAccountRes>(null);
   }

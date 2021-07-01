@@ -1,5 +1,5 @@
 import { Helper } from "src/utils/Helper";
-
+import md5 from "md5";
 export interface IAccount {
   ID: string;
   USERNAME: string;
@@ -25,7 +25,7 @@ export class Account implements IAccount {
   ) {
     this.ID = Helper.generateUID();
     this.USERNAME = USERNAME;
-    this.PASSWORD= PASSWORD;
+    this.PASSWORD= md5(PASSWORD) ;
     }
 
 }

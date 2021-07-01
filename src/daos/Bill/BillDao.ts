@@ -24,7 +24,9 @@ export interface IBillDao {
   delete: (id: string) => Promise<void>;
   filter: (billReq: IBillReq) => Promise<Result<BillRes[]>>;
 }
-
+const billInfoDao = new BillInfoDao();  
+const productDao = new ProductDao();
+const accountInfoDao = new AccountInfoDao();
 class BillDao extends OracleDB implements IBillDao {
   public tableName = "BILLS";
 
@@ -127,8 +129,8 @@ class BillDao extends OracleDB implements IBillDao {
       }
       const db = this.OpenDB();
       const bill = new Bill(billReq);
-      const productDao = new ProductDao();
-      bill.BILLSTATUS = "Đang xử lý";
+ 
+      bill.BILLSTATUS = "Hoàn thành";
 
       if (!billReq.BILLINFOS) {
         return new Result<string>(null, "Lỗi thiếu thông tin");
@@ -162,7 +164,7 @@ class BillDao extends OracleDB implements IBillDao {
         const transaction = await db.transaction();
         await db<Bill>(this.tableName).transacting(transaction).insert(bill);
 
-        const billInfoDao = new BillInfoDao();
+     
         const tmp = await billInfoDao.add(billInfos, transaction);
 
         //SOLD
@@ -178,14 +180,14 @@ class BillDao extends OracleDB implements IBillDao {
         }
      
         //Points
-        const accountInfoDao = new AccountInfoDao();
+  
         const resultChangePoint = await accountInfoDao.changePoint(
           bill.ACCOUNTID,
           bill.TOTAL / 100,
           transaction
         );
 
-        if (tmp && tmp.data && resultChangePoint ) {
+        if (tmp && tmp.data && resultChangePoint) {
           transaction.commit();
           return new Result<string>(bill.ID);
         } else {
