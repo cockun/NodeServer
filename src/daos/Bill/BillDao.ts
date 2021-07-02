@@ -82,6 +82,13 @@ class BillDao extends OracleDB implements IBillDao {
         tmp.where("ACCOUNTID", billReq.ACCOUNTID);
       }
 
+
+      if(billReq.FULLNAME){
+        tmp.whereRaw(`LOWER(FULLNAME) LIKE ?`, [
+          `%${billReq.FULLNAME.toLowerCase()}%`,
+        ]);
+      }
+
       if (billReq.FROMDATE && billReq.TODATE) {
         tmp
           .where("DATEBUY", "<=", new Date(billReq.TODATE))
