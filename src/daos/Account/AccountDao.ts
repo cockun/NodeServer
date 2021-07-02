@@ -7,6 +7,7 @@ import { Helper } from "src/utils/Helper";
 import md5 from "md5";
 import { AccountRes, IAccountRes } from "../../response/AccountRes";
 import AccountInfoDao from "./AccountInfoDao";
+import { TIMEOUT } from "dns";
 
 export interface IAccountDao {
   getByUser: (user: string) => Promise<Result<IAccount>>;
@@ -55,8 +56,9 @@ class AccountDao extends OracleDB implements IAccountDao {
           tmp.whereRaw(`LOWER(USERNAME) LIKE ?`, [
             `%${accountReq.USERNAME.toLowerCase()}%`,
           ]);
+        } else {
+          tmp = db<IAccountRes>("ACCOUNTS");
         }
-        tmp = db<IAccountRes>("ACCOUNTS");
       }
 
       const countQuery = tmp.clone();
@@ -74,16 +76,26 @@ class AccountDao extends OracleDB implements IAccountDao {
           tmp.orderBy([{ column: accountReq.ORDERBYNAME, order: "asc" }]);
         }
       }
-      tmp
+      await tmp
         .limit(accountReq.PAGESIZE)
-        .offset((accountReq.PAGEINDEX - 1) * accountReq.PAGESIZE);
+        .offset((accountReq.PAGEINDEX - 1) * accountReq.PAGESIZE)
+        .as("s");
 
       if (accountReq.FULLNAME) {
-        tmp.join("ACCOUNTS", { "ACCOUNTS.ID": "ACCOUNTID" });
+        //tmp.join("ACCOUNTS", { "ACCOUNTS.ID": "s.ACCOUNTID" });
+
+        tmp = db.from(tmp).join("ACCOUNTS", { "ACCOUNTS.ID": "s.ACCOUNTID" }).as("z");
       } else {
-        tmp.join("ACCOUNTINFO", { "ACCOUNTS.ID": "ACCOUNTINFO.ACCOUNTID" });
+        tmp = db
+          .from(tmp)
+          .join("ACCOUNTINFO", { "s.ID": "ACCOUNTINFO.ACCOUNTID" }).as("z");
       }
-      tmp.join("ROLE", { ROLEID: "ROLE.ID" });
+
+      // tmp = db.from (tmp).join("ROLE", { "z.ROLEID": "ROLE.ID" });
+      // console.log(tmp.toQuery())
+
+
+
       const result = await tmp.select("*");
       const result2 = result.map((p) => {
         return new AccountRes(
@@ -94,7 +106,10 @@ class AccountDao extends OracleDB implements IAccountDao {
           p.PHONE,
           p.ROLENAME,
           p.POINTS,
-          p.CREATEDATE
+          p.CREATEDATE,
+          p.SEX,
+          p.EMAIL,
+          p.BIRTHDAY
         );
       });
 
@@ -120,8 +135,7 @@ class AccountDao extends OracleDB implements IAccountDao {
   public async Login(accountReq: IAccountReq): Promise<Result<IAccountRes>> {
     const db = this.OpenDB();
     if (db) {
-      if(accountReq.PASSWORD)
-      accountReq.PASSWORD = md5(accountReq.PASSWORD);
+      if (accountReq.PASSWORD) accountReq.PASSWORD = md5(accountReq.PASSWORD);
       const result = await db<IAccountRes>(this.tableName)
         .select("*")
         .where(accountReq)
@@ -172,7 +186,7 @@ class AccountDao extends OracleDB implements IAccountDao {
     } else {
       return new Result<string>(null, "Vui lòng nhập đủ thông tin");
     }
- 
+
     if (db) {
       const transaction = await db.transaction();
       try {

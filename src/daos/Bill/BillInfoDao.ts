@@ -5,7 +5,7 @@ import { Knex } from "knex";
 
 export interface IBillInfoDao {
   getById: (id: string) => Promise<Result<IBillInfo>>;
-  getByIdBill: (id: string) => Promise<Result<IBillInfo[]>>;
+  getByIdBill: (ids: string[]) => Promise<Result<IBillInfo[]>>;
   add: (
     billInfos: BillInfo[],
     transaction: Knex.Transaction<any, any[]>
@@ -27,12 +27,12 @@ class BillInfoDao extends OracleDB implements IBillInfoDao {
     return new Result<IBillInfo>(null, "Connect err");
   }
 
-  public async getByIdBill(id: string): Promise<Result<IBillInfo[]>> {
+  public async getByIdBill(ids: string[]): Promise<Result<IBillInfo[]>> {
     const db = this.OpenDB();
     if (db) {
       const result = await db<IBillInfo>(this.tableName)
         .select("*")
-        .where("BILLID", id);
+        .whereIn("BILLID", ids);
 
       return new Result<IBillInfo[]>(result);
     }

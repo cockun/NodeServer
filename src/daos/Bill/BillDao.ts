@@ -24,7 +24,7 @@ export interface IBillDao {
   delete: (id: string) => Promise<void>;
   filter: (billReq: IBillReq) => Promise<Result<BillRes[]>>;
 }
-const billInfoDao = new BillInfoDao();  
+const billInfoDao = new BillInfoDao();
 const productDao = new ProductDao();
 const accountInfoDao = new AccountInfoDao();
 class BillDao extends OracleDB implements IBillDao {
@@ -84,8 +84,8 @@ class BillDao extends OracleDB implements IBillDao {
 
       if (billReq.FROMDATE && billReq.TODATE) {
         tmp
-          .where("DATEBUY", "<", billReq.TODATE)
-          .where("DATEBUY", ">", billReq.FROMDATE);
+          .where("DATEBUY", "<=", new Date(billReq.TODATE))
+          .where("DATEBUY", ">=", new Date(billReq.FROMDATE));
       }
       const countQuery = tmp.clone();
       const { COUNT } = (await countQuery.count("* AS COUNT").first()) as any;
@@ -104,17 +104,21 @@ class BillDao extends OracleDB implements IBillDao {
       tmp
         .limit(billReq.PAGESIZE)
         .offset((billReq.PAGEINDEX - 1) * billReq.PAGESIZE);
-      const bill = await tmp.select("*");
-      const billInfoDao = new BillInfoDao();
-      if (bill) {
-        for (let i = 0; i < bill.length; ++i) {
-          const tmp = (await billInfoDao.getByIdBill(bill[i].ID)).data;
-          if (tmp) {
-            bill[i].BILLINFOS = tmp;
-          } else {
-            bill[i].BILLINFOS = [];
-          }
-        }
+      console.log(tmp.toQuery());
+      let bill = await tmp.select("*");
+
+      const billIds = bill.map((p) => p.ID);
+
+      if (billIds.length > 0) {
+        const billInfos = (await billInfoDao.getByIdBill(billIds)).data;
+        bill = bill.map((p) => {
+          return {
+            ...p,
+            BILLINFOS: billInfos?.filter(
+              (billinfo) => billinfo.BILLID === p.ID
+            ),
+          } as BillRes;
+        });
       }
 
       return new Result<BillRes[]>(bill, "", COUNT);
@@ -129,7 +133,7 @@ class BillDao extends OracleDB implements IBillDao {
       }
       const db = this.OpenDB();
       const bill = new Bill(billReq);
- 
+
       bill.BILLSTATUS = "Hoàn thành";
 
       if (!billReq.BILLINFOS) {
@@ -164,11 +168,10 @@ class BillDao extends OracleDB implements IBillDao {
         const transaction = await db.transaction();
         await db<Bill>(this.tableName).transacting(transaction).insert(bill);
 
-     
         const tmp = await billInfoDao.add(billInfos, transaction);
 
         //SOLD
-        for ( let i = 0 ; i < billInfos.length  ; ++ i ){
+        for (let i = 0; i < billInfos.length; ++i) {
           const tmp = await productDao.changeSold(
             billInfos[i].PRODUCTID,
             billInfos[i].QUANTITY,
@@ -178,9 +181,9 @@ class BillDao extends OracleDB implements IBillDao {
             return new Result<string>(null, tmp.err ? tmp.err : "Lỗi");
           }
         }
-     
+
         //Points
-  
+
         const resultChangePoint = await accountInfoDao.changePoint(
           bill.ACCOUNTID,
           bill.TOTAL / 100,
