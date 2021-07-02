@@ -24,7 +24,7 @@ export class Bill implements IBill {
   constructor(billReq: BillReq) {
     this.ID = Helper.generateUID();
     this.TOTAL = 0;
-    this.DATEBUY = billReq.DATEBUY ?? new Date(Date.now());
+    this.DATEBUY = new Date(Date.now());
     this.FULLNAME = billReq.FULLNAME ? billReq.FULLNAME : "";
     this.PHONE = billReq.PHONE ? billReq.PHONE : "";
     this.ADDRESS = billReq.ADDRESS ? billReq.ADDRESS : "";
