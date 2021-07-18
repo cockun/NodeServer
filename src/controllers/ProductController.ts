@@ -21,6 +21,13 @@ export async function getById(req: Request, res: Response) {
     return res.status(OK).json(product);
 }
 
+
+export async function getBySlug(req: Request, res: Response) {
+    const {SLUG} = req.params;
+    const product = await productDao.getBySlug(SLUG);
+    return res.status(OK).json(product);
+}
+
 export async function filler(req: Request, res: Response) {
     const data = req.query ;
     const product = await productDao.filter(data);

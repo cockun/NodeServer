@@ -10,8 +10,8 @@ export interface IProduct {
     IMGSRC: string;
     DISCOUNT: number;
     DESCRIPTION: string;
-    SOLD : number
-  
+    SOLD : number;
+    SLUG : string
   }
   
   export class Product implements IProduct {
@@ -24,7 +24,7 @@ export interface IProduct {
     public DESCRIPTION: string;
     public SOLD : number;
     public CREATEDATE : Date; 
-  
+    public SLUG : string;
   
   
     constructor(
@@ -44,6 +44,7 @@ export interface IProduct {
         this.DESCRIPTION = productReq.DESCRIPTION?productReq.DESCRIPTION:"";
         this.SOLD  =0;
         this.CREATEDATE = new Date(Date.now());
+        this.SLUG = productReq.SLUG?productReq.SLUG:"";
       }
   
   }

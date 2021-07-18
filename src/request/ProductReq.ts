@@ -13,7 +13,7 @@ export interface IProdctReq {
     PAGESIZE?:number;
     ORDERBYASC?: boolean;
     ORDERBYNAME?:string;
-    
+    SLUG?: string;
 }
 export class ProductReq implements IProdctReq {
 
@@ -23,6 +23,7 @@ export class ProductReq implements IProdctReq {
     public CATEGORYID?: string;
     public IMGSRC?: string;
     public DISCOUNT?: number;
+    public SLUG?: string;
     public DESCRIPTION?: string;
     public PAGEINDEX?:number;
     public PAGESIZE?:number;

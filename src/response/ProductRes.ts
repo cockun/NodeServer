@@ -10,7 +10,7 @@ export interface IProductRes {
     DISCOUNT: number;
     DESCRIPTION: string;
     SOLD : number
-
+    SLUG: string;
   }
   
   export class ProductRes implements IProductRes {
@@ -21,8 +21,8 @@ export interface IProductRes {
     public IMGSRC: string;
     public DISCOUNT: number;
     public DESCRIPTION: string;
-    public SOLD : number
-
+    public SOLD : number;
+    public SLUG: string;
   
     constructor (
       product: IProduct,
@@ -36,8 +36,8 @@ export interface IProductRes {
         this.IMGSRC= product.IMGSRC ;
         this.DISCOUNT=  product.DISCOUNT;
         this.DESCRIPTION=  product.DESCRIPTION;
-        this.SOLD =  product.SOLD
-      
+        this.SOLD =  product.SOLD;
+        this.SLUG = product.SLUG;
     }
   
     
