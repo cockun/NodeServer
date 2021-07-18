@@ -219,6 +219,30 @@ class ProductDao extends OracleDB implements IProductDao {
     }
     return new Result<string>(null, "Lỗi");
   }
+
+  public async getBySlug(slug: string): Promise<Result<IProductRes>> {
+    const db = this.OpenDB();
+    if (db) {
+      let productRes: ProductRes;
+      const result = await db<Product>(this.tableName)
+        .select("*")
+        .where("SLUG", slug)
+        .first();
+      if (result?.CATEGORYID) {
+        const category = await db<ICategory>("CATEGORIES")
+          .select("*")
+          .where("ID", result.CATEGORYID)
+          .first();
+        if (category) {
+          productRes = new ProductRes(result, category);
+          return new Result<IProductRes>(productRes);
+        }
+      }
+
+      return new Result<IProductRes>(null);
+    }
+    return new Result<IProductRes>(null, "Lỗi");
+  }
 }
 
 export default ProductDao;

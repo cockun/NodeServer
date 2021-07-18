@@ -11,7 +11,7 @@ class OracleDB {
         connection: {
           user: "c##user",
           password: "user",
-          connectString: "localhost:1521/orcl",
+          connectString: "localhost:1522/orcl",
           requestTimeout: 100,
         },
       });
