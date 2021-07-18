@@ -1,5 +1,5 @@
-import bcrypt from "bcrypt";
-import { Request, Response, Router } from "express";
+// import bcrypt from "bcrypt";
+import { Request, Response } from "express";
 import StatusCodes from "http-status-codes";
 
 import AccountDao from "@daos/Account/AccountDao";
@@ -38,7 +38,8 @@ export async function login(req: Request, res: Response) {
   }
   // Check password
   //const pwdPassed = await bcrypt.compare(password, user.pwdHash);
-  const pwdPassed = await bcrypt.compare(password, "");
+  // const pwdPassed = await bcrypt.compare(password, "");
+  const pwdPassed ="sida";
   if (!pwdPassed) {
     return res.status(UNAUTHORIZED).json({
       error: loginFailedErr,

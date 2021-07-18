@@ -1,6 +1,6 @@
 import RoleDao from "@daos/Account/Role";
 import { AccountReq } from "src/request/AccountReq";
-import { Helper } from "src/utils/Helper";
+import { Helper } from "../utils/Helper";
 
 export interface IAccountInfo {
   ID: string;

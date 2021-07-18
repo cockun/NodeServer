@@ -1,5 +1,5 @@
 import { ProductReq } from "src/request/ProductReq";
-import { Helper } from "src/utils/Helper";
+import { Helper } from "../utils/Helper";
 import { Category, ICategory } from "./Categories";
 
 export interface IProduct {

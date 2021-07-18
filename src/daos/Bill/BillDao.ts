@@ -4,7 +4,7 @@ import { AccountInfo } from "@entities/AccountInfo";
 import { Result } from "@entities/Result";
 import { table } from "console";
 import { AccountReq, IAccountReq } from "src/request/AccountReq";
-import { Helper } from "src/utils/Helper";
+import { Helper } from "../../utils/Helper";
 import { IBill, Bill } from "@entities/Bills";
 import { callbackify } from "util";
 import { IProdctReq } from "src/request/ProductReq";

@@ -2,7 +2,7 @@ import OracleDB from "@daos/OracleDb/OracleDB";
 import { IProduct, Product } from "@entities/Product";
 
 import { Result } from "@entities/Result";
-import { Helper } from "src/utils/Helper";
+import { Helper } from "../../utils/Helper";
 import { IProdctReq } from "src/request/ProductReq";
 import { ICategory } from "../../entities/Categories";
 import { IProductRes, ProductRes } from "../../response/ProductRes";
@@ -16,7 +16,7 @@ export interface IProductDao {
   update: (product: IProdctReq) => Promise<Result<string>>;
   delete: (id: string) => Promise<Result<string>>;
 }
-
+const categoryDao = new CategoryDao();
 class ProductDao extends OracleDB implements IProductDao {
   public tableName = "PRODUCTS";
 
@@ -97,7 +97,7 @@ class ProductDao extends OracleDB implements IProductDao {
 
       const result = await tmp.select("*");
       const categoryIds = [...new Set(result.map((p) => p.CATEGORYID))];
-      const categoryDao = new CategoryDao();
+
       const categories = await categoryDao.getManyByIds(categoryIds);
 
       const productRes = result.map((p) => {
@@ -133,7 +133,7 @@ class ProductDao extends OracleDB implements IProductDao {
       try {
         await db<Product>(this.tableName)
           .transacting(transaction)
-          .insert(Helper.upcaseKey(product));
+          .insert(product);
         transaction.commit();
         return new Result<string>(product.ID);
       } catch (e) {

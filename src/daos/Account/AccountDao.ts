@@ -3,11 +3,10 @@ import { IAccount, Account } from "@entities/Account";
 import { AccountInfo, IAccountInfo } from "@entities/AccountInfo";
 import { Result } from "@entities/Result";
 import { AccountReq, IAccountReq } from "src/request/AccountReq";
-import { Helper } from "src/utils/Helper";
+import { Helper } from "../../utils/Helper";
 import md5 from "md5";
 import { AccountRes, IAccountRes } from "../../response/AccountRes";
 import AccountInfoDao from "./AccountInfoDao";
-import { TIMEOUT } from "dns";
 
 export interface IAccountDao {
   getByUser: (user: string) => Promise<Result<IAccount>>;
@@ -221,7 +220,7 @@ class AccountDao extends OracleDB implements IAccountDao {
         const result = await db<IAccount>(this.tableName)
           .transacting(transaction)
           .where("ID", account.ID)
-          .update(Helper.upcaseKey(account))
+          .update(account)
           .returning("*");
         transaction.commit();
         return new Result<IAccount>(result[1]);

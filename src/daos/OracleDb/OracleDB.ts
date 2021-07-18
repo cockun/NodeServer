@@ -3,21 +3,22 @@ import knex, { Knex } from "knex";
 
 class OracleDB {
   private password = "hr";
-  private _connection !: Knex<any, unknown[]>;
+  private _connection!: Knex<any, unknown[]>;
   protected OpenDB(): Knex<any, unknown[]> {
     if (!this._connection) {
       this._connection = knex({
-        client: "oracledb",
+        client: "mysql",
         connection: {
-          user: "c##user",
-          password: "user",
-          connectString: "localhost:1521/orcl",
+          host: process.env.db ?? "127.0.0.1",
+          user: "root",
+          password: "123456aA",
+          database: "Demo",
           requestTimeout: 100,
         },
       });
     }
 
-    return this._connection ;  
+    return this._connection;
   }
 
   protected async CloseDB(connection: oracledb.Connection) {

@@ -14,9 +14,6 @@
       "src"
     ],
     "ext": "ts, html",
-    "ignore": [
-      "src/public"
-    ],
     "exec": "./node_modules/.bin/ts-node --files -r tsconfig-paths/register ./src"
   },
   "_moduleAliases": {
@@ -57,11 +54,9 @@
     }
   },
   "eslintIgnore": [
-    "src/public/",
     "build.ts"
   ],
   "dependencies": {
-    "bcrypt": "^5.0.1",
     "command-line-args": "^5.1.1",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
@@ -77,6 +72,7 @@
     "md5": "^2.3.0",
     "module-alias": "^2.2.2",
     "morgan": "^1.10.0",
+    "mysql": "^2.18.1",
     "oracledb": "^5.1.0",
     "randomstring": "^1.2.1",
     "reflect-metadata": "^0.1.13",
@@ -84,7 +80,6 @@
     "uuid-js": "^0.7.5"
   },
   "devDependencies": {
-    "@types/bcrypt": "^5.0.0",
     "@types/command-line-args": "^5.0.0",
     "@types/cookie-parser": "^1.4.2",
     "@types/cors": "^2.8.10",

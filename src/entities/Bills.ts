@@ -1,5 +1,5 @@
 import { BillReq } from "src/request/BillReq";
-import { Helper } from "src/utils/Helper";
+import { Helper } from "../utils/Helper";
 
 export interface IBill {
   ID: string;

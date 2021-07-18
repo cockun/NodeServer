@@ -1,11 +1,11 @@
 import { BillReq } from "src/request/BillReq";
-import { Helper } from "src/utils/Helper";
+import { Helper } from "../utils/Helper";
 import { IBillInfo } from "../entities/Billinfo";
 
 export interface IBillRes {
     ID: string;
     TOTAL : number;
-    DATEBUY : string;  
+    DATEBUY : Date;  
     FULLNAME : string;
     PHONE : string;
     ADDRESS : string;
@@ -15,7 +15,7 @@ export interface IBillRes {
   export class BillRes implements IBillRes {
     public ID: string;
     public TOTAL : number;
-    public DATEBUY : string;  
+    public DATEBUY : Date;  
     public FULLNAME : string;
     public PHONE : string;
     public ADDRESS : string;
@@ -31,7 +31,7 @@ export interface IBillRes {
     ) {
         this.ID = Helper.generateUID();
         this.TOTAL = billReq.TOTAL?billReq.TOTAL:0;
-        this.DATEBUY = billReq.DATEBUY?billReq.DATEBUY:"";
+        this.DATEBUY = billReq.DATEBUY?billReq.DATEBUY:new Date(Date.now());
         this.FULLNAME = billReq.FULLNAME?billReq.FULLNAME:"";
         this.PHONE = billReq.PHONE?billReq.PHONE:"";
         this.ADDRESS = billReq.ADDRESS?billReq.ADDRESS:"";

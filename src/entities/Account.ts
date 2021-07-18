@@ -1,4 +1,4 @@
-import { Helper } from "src/utils/Helper";
+import { Helper } from "../utils/Helper";
 import md5 from "md5";
 export interface IAccount {
   ID: string;

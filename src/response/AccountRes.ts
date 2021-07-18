@@ -1,4 +1,4 @@
-import { Helper } from "src/utils/Helper";
+import { Helper } from "../utils/Helper";
 
 export interface IAccountRes {
   ACCOUNTID?: string;

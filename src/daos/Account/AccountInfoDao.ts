@@ -4,7 +4,7 @@ import { AccountInfo, IAccountInfo } from "@entities/AccountInfo";
 import { Result } from "@entities/Result";
 import { Knex } from "knex";
 import { AccountReq, IAccountReq } from "src/request/AccountReq";
-import { Helper } from "src/utils/Helper";
+import { Helper } from "../../utils/Helper";
 import RoleDao from "./Role";
 
 export interface IAccountInfoDao {
@@ -86,7 +86,7 @@ class AccountDao extends OracleDB implements IAccountInfoDao {
         await db<Account>(this.tableName)
           .transacting(transaction)
           .where("ACCOUNTID", account.ID)
-          .update(Helper.upcaseKey(account));
+          .update(account);
         transaction.commit();
         return new Result<any>({ ID: account.ID });
       } catch (e) {

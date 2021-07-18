@@ -14,7 +14,7 @@ import {
 import {
   getAllAccountInfos,
   updateOneAccountInfo,
-} from "src/controllers/AccountInfoController";
+} from "../controllers/AccountInfoController";
 import {
   addOneProduct,
   updateOneProduct,

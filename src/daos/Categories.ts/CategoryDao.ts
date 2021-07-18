@@ -2,7 +2,7 @@ import OracleDB from "@daos/OracleDb/OracleDB";
 import { ICategory, Category } from "@entities/Categories";
 
 import { Result } from "@entities/Result";
-import { Helper } from "src/utils/Helper";
+import { Helper } from "../../utils/Helper";
 import { ICategoryReq } from "../../request/CategoryReq";
 
 export interface ICategoryDao {
@@ -62,15 +62,14 @@ class CategoryDao extends OracleDB implements ICategoryDao {
   public async getManyByIds(data: string[]): Promise<Result<ICategory[]>> {
     const db = this.OpenDB();
     if (db) {
-      const result = await db<ICategory>(this.tableName).select("*").whereIn('ID',data);
-
+      const result = await db<ICategory>(this.tableName).select("*").whereIn('ID',data); 
       return new Result<ICategory[]>(result);
     }
     return   new Result<ICategory[]>(null,"Lỗi");
   }
 
   public async add(categoryReq: ICategoryReq): Promise<Result<string>> {
-    const db = this.OpenDB();
+    const db = this.OpenDB(); 
     let category;
     if(categoryReq.CATEGORYNAME){
         category = new Category(categoryReq.CATEGORYNAME);
@@ -84,7 +83,7 @@ class CategoryDao extends OracleDB implements ICategoryDao {
       try {
         await db<Category>(this.tableName)
           .transacting(transaction)
-          .insert(Helper.upcaseKey(category));
+          .insert(category);
         transaction.commit();
         transaction.rollback();
         return new Result<string>(category.ID);
@@ -108,7 +107,7 @@ class CategoryDao extends OracleDB implements ICategoryDao {
         const result = await db<ICategory>(this.tableName)
           .transacting(transaction)
           .where("ID", category.ID)
-          .update(Helper.upcaseKey(category))
+          .update(category)
           .returning("*");
         transaction.commit();
         return new Result<ICategory>(result[1]);
