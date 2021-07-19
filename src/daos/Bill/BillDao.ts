@@ -134,11 +134,13 @@ class BillDao extends OracleDB implements IBillDao {
   }
 
   public async add(billReq: IBillReq): Promise<Result<string>> {
+    const db = this.OpenDB();
+    const transaction = await db.transaction();
     try {
       if (!billReq.ACCOUNTID) {
         return new Result<string>(null, "Thiếu thông tin");
       }
-      const db = this.OpenDB();
+ 
       const bill = new Bill(billReq);
 
       bill.BILLSTATUS = "Hoàn thành";
@@ -172,7 +174,7 @@ class BillDao extends OracleDB implements IBillDao {
       bill.TOTAL = total;
 
       if (db) {
-        const transaction = await db.transaction();
+      
         await db<Bill>(this.tableName).transacting(transaction).insert(bill);
 
         const tmp = await billInfoDao.add(billInfos, transaction);
@@ -207,19 +209,20 @@ class BillDao extends OracleDB implements IBillDao {
       }
       return new Result<string>(null, "connect oracle err");
     } catch (e) {
+      transaction.rollback();
       return new Result<string>(null, e.message);
     }
   }
 
   public async update(billReq: IBillReq): Promise<Result<IBill>> {
-    const db = this.OpenDB();
+   
     if (!billReq.ID) {
       return new Result<IBill>(null, "Bill không tồn tại");
     }
     if (!billReq.BILLSTATUS) {
       return new Result<IBill>(null);
     }
-
+  const db = this.OpenDB();
     if (db) {
       const transaction = await db.transaction();
       try {
