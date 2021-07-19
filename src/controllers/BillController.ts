@@ -76,7 +76,6 @@ export async function updateOneBill(req: Request, res: Response) {
             error: paramMissingError,
         });
     }
-    data.id = Number(data.id);
     await billDao.update(data);
     return res.status(OK).end();
 }

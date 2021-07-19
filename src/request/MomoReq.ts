@@ -29,7 +29,7 @@ export class MomoReq implements IMomoReq {
     this.partnerCode = data.partnerCode;
     this.requestType = data.requestType;
     this.notifyUrl = data.notifyUrl;
-    this.returnUrl = data.returnUrl;
+    this.returnUrl = data.returnUrl; // mdsfone.xyz/api/payments/momo
     this.orderId = data.orderId;
     this.amount = data.amount;
     this.orderInfo = data.orderInfo;

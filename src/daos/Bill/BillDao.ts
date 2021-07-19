@@ -15,7 +15,10 @@ import BillInfoDao from "./BillInfoDao";
 import { BillRes } from "../../response/BillRes";
 import AccountInfoDao from "../Account/AccountInfoDao";
 import { readSync } from "fs";
-
+import { IMomoReq, MomoReq } from "../../request/MomoReq";
+import { callApiMomo } from "../../utils/apiCaller";
+import CryptoJS from "crypto-js";
+import { stringify } from "querystring";
 export interface IBillDao {
   getById: (id: string) => Promise<Result<IBill>>;
   getAll: () => Promise<Result<IBill[]> | undefined>;
@@ -82,8 +85,7 @@ class BillDao extends OracleDB implements IBillDao {
         tmp.where("ACCOUNTID", billReq.ACCOUNTID);
       }
 
-
-      if(billReq.FULLNAME){
+      if (billReq.FULLNAME) {
         tmp.whereRaw(`LOWER(FULLNAME) LIKE ?`, [
           `%${billReq.FULLNAME.toLowerCase()}%`,
         ]);
@@ -140,10 +142,10 @@ class BillDao extends OracleDB implements IBillDao {
       if (!billReq.ACCOUNTID) {
         return new Result<string>(null, "Thiếu thông tin");
       }
- 
+
       const bill = new Bill(billReq);
 
-      bill.BILLSTATUS = "Hoàn thành";
+      bill.BILLSTATUS = "Chưa thanh toán";
 
       if (!billReq.BILLINFOS) {
         return new Result<string>(null, "Lỗi thiếu thông tin");
@@ -174,7 +176,6 @@ class BillDao extends OracleDB implements IBillDao {
       bill.TOTAL = total;
 
       if (db) {
-      
         await db<Bill>(this.tableName).transacting(transaction).insert(bill);
 
         const tmp = await billInfoDao.add(billInfos, transaction);
@@ -201,7 +202,32 @@ class BillDao extends OracleDB implements IBillDao {
 
         if (tmp && tmp.data && resultChangePoint) {
           transaction.commit();
-          return new Result<string>(bill.ID);
+          const data: IMomoReq = {
+            accessKey: "ddJvoojK2D3iXivV",
+            partnerCode: "MOMOF5HY20210719",
+            notifyUrl: "http://mdsfone.xyz/api/payments/momo",
+            returnUrl: "http://mdsfone.xyz/AccUser",
+            orderId: bill.ID ?? "",
+            amount: "1000",
+            orderInfo: "MDSFONE",
+            requestId: "MM1540456472575",
+            extraData: "email=abc@gmail.com",
+          };
+
+          const momoReq = new MomoReq(data);
+          const data2 = momoReq.getString();
+          momoReq.requestType = "captureMoMoWallet";
+          momoReq.requestId = "MM1540456472575";
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+          const signature = CryptoJS.HmacSHA256(
+            data2,
+            "Nb7DJ8MJLZMd6PRVcAWHcn8BoUedb2yt"
+          );
+
+          momoReq.signature = signature.toString();
+          const momo = await callApiMomo("", "POST", momoReq);
+
+          return new Result<string>(momo?.data.payUrl);
         } else {
           transaction.rollback();
           return new Result<string>(null, tmp.err ? tmp.err : "Lỗi");
@@ -215,14 +241,13 @@ class BillDao extends OracleDB implements IBillDao {
   }
 
   public async update(billReq: IBillReq): Promise<Result<IBill>> {
-   
     if (!billReq.ID) {
       return new Result<IBill>(null, "Bill không tồn tại");
     }
     if (!billReq.BILLSTATUS) {
       return new Result<IBill>(null);
     }
-  const db = this.OpenDB();
+    const db = this.OpenDB();
     if (db) {
       const transaction = await db.transaction();
       try {

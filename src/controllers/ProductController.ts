@@ -13,28 +13,7 @@ import { IMomoReq, MomoReq } from "../request/MomoReq";
 export async function getAllProducts(req: Request, res: Response) {
   const products = await productDao.getAll();
 
-  const data: IMomoReq = {
-    accessKey: "ddJvoojK2D3iXivV",
-    partnerCode: "MOMOF5HY20210719",
-    notifyUrl: "https://momo.vn",
-    returnUrl: "https://momo.vn",
-    orderId: "MM15404566895576",
-    amount: "150000",
-    orderInfo: "SDK team.",
-    requestId: "MM1540456472575",
-    extraData: "email=abc@gmail.com",
-  };
-
-  const momoReq = new MomoReq(data);
-  momoReq.getString();
-
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  const signature = CryptoJS.HmacSHA256(
-    momoReq.getString(),
-    "Nb7DJ8MJLZMd6PRVcAWHcn8BoUedb2yt"
-  );
-
-  const heo = signature.toString();
+ 
   return res.status(OK).json(products);
 }
 

@@ -39,6 +39,7 @@ import {
   deleteOneCategory
 } from "../controllers/CategoriesController";
 import { coc } from "../controllers/RenderData";
+import { getMomoReq } from "../controllers/PaymentController";
 
 
 
@@ -93,7 +94,8 @@ categoryRouter.delete("/delete/:id", deleteOneCategory);
 
 
 
-
+const paymentsRouter = Router();
+paymentsRouter.post("/momo",getMomoReq)
 
 // Export the base-router
 const baseRouter = Router();
@@ -103,6 +105,7 @@ baseRouter.use("/products", productRouter);
 baseRouter.use("/accountinfos", accountInfoRouter);
 baseRouter.use("/bills",billRouter)
 baseRouter.use("/categories",categoryRouter)
+baseRouter.use("/payments",paymentsRouter)
 export default baseRouter;
 
 
