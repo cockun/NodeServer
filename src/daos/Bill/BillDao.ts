@@ -23,7 +23,7 @@ export interface IBillDao {
   getById: (id: string) => Promise<Result<IBill>>;
   getAll: () => Promise<Result<IBill[]> | undefined>;
   add: (bill: IBillReq) => Promise<Result<string>>;
-  update: (bill: IBillReq) => Promise<Result<IBill>>;
+  update: (bill: IBillReq) => Promise<Result<string>>;
   delete: (id: string) => Promise<void>;
   filter: (billReq: IBillReq) => Promise<Result<BillRes[]>>;
 }
@@ -205,7 +205,7 @@ class BillDao extends OracleDB implements IBillDao {
           const data: IMomoReq = {
             accessKey: "ddJvoojK2D3iXivV",
             partnerCode: "MOMOF5HY20210719",
-            notifyUrl: "http://mdsfone.xyz/api/payments/momo",
+            notifyUrl: "http://35.247.162.235/api/payments/momo",
             returnUrl: "http://mdsfone.xyz/AccUser",
             orderId: bill.ID ?? "",
             amount: "1000",
@@ -240,49 +240,26 @@ class BillDao extends OracleDB implements IBillDao {
     }
   }
 
-  public async update(billReq: IBillReq): Promise<Result<IBill>> {
+  public async update(billReq: IBillReq): Promise<Result<string>> {
     if (!billReq.ID) {
-      return new Result<IBill>(null, "Bill không tồn tại");
+      return new Result<string>(null, "Bill không tồn tại");
     }
     if (!billReq.BILLSTATUS) {
-      return new Result<IBill>(null);
+      return new Result<string>(null);
     }
     const db = this.OpenDB();
     if (db) {
-      const transaction = await db.transaction();
       try {
-        if (billReq.BILLSTATUS == "Hoàn thành") {
-          const bill = await this.getById(billReq.ID);
-          if (!bill || !bill.data) {
-            return new Result<IBill>(null, "Bill không tồn tại");
-          }
-          const accountInfoDao = new AccountInfoDao();
-          const resultChangePoint = await accountInfoDao.changePoint(
-            bill.data.ACCOUNTID,
-            bill.data.TOTAL / 100,
-            transaction
-          );
-          if (!resultChangePoint.data) {
-            return new Result<IBill>(
-              null,
-              resultChangePoint.err ? resultChangePoint.err : "Lỗi"
-            );
-          }
-        }
-
-        const result = await db<IBill>(this.tableName)
-          .transacting(transaction)
+        await db<IBill>(this.tableName)
           .where("ID", billReq.ID)
-          .update("BILLSTATUS", billReq.BILLSTATUS)
-          .returning("*");
-        transaction.commit();
-        return new Result<IBill>(result[1]);
+          .update("BILLSTATUS", billReq.BILLSTATUS);
+
+        return new Result<string>(null);
       } catch (e) {
-        transaction.rollback();
-        return new Result<IBill>(null);
+        return new Result<string>(null);
       }
     }
-    return new Result<IBill>(null, "connect oracle err");
+    return new Result<string>(null, "connect oracle err");
   }
 
   public async delete(id: string): Promise<void> {
