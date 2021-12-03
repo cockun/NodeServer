@@ -17,6 +17,7 @@ export interface IBillReq {
   ORDERBYNAME?: string;
   FROMDATE?: Date;
   TODATE?: Date;
+  PRIVATEKEY?: string;
 }
 export class BillReq implements IBillReq {
   public ID?: string;
@@ -34,4 +35,5 @@ export class BillReq implements IBillReq {
   public ORDERBYNAME?: string;
   public FROMDATE?: Date;
   public TODATE?: Date;
+  public PRIVATEKEY?: string;
 }

@@ -29,6 +29,7 @@ export class AccountInfo implements IAccountInfo {
   public EMAIL: string;
   public BIRTHDAY: Date;
 
+
   constructor(accountReq: AccountReq) {
     this.ACCOUNTID = accountReq.ID ? accountReq.ID : "";
     this.ID = Helper.generateUID();

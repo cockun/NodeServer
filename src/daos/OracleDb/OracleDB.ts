@@ -9,7 +9,7 @@ class OracleDB {
       this._connection = knex({
         client: "mysql",
         connection: {
-          host: process.env.db ?? "35.247.162.235",
+          host: 'localhost',
           user: "root",
           password: "123456aA",
           database: "Demo",

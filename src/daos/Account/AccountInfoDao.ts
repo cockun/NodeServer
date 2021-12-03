@@ -28,12 +28,12 @@ class AccountDao extends OracleDB implements IAccountInfoDao {
         .select("*")
         .where("ID", id)
         .first();
-      return new Result<IAccountInfo> (result);
+      return new Result<IAccountInfo>(result);
     }
-    return new Result<IAccountInfo> (null);
+    return new Result<IAccountInfo>(null);
   }
 
-  
+
   public async getByIdAccount(id: string): Promise<Result<IAccountInfo>> {
     const db = this.OpenDB();
     if (db) {
@@ -41,9 +41,9 @@ class AccountDao extends OracleDB implements IAccountInfoDao {
         .select("*")
         .where("ACCOUNTID", id)
         .first();
-      return new Result<IAccountInfo> (result);
+      return new Result<IAccountInfo>(result);
     }
-    return new Result<IAccountInfo> (null);
+    return new Result<IAccountInfo>(null);
   }
 
   public async getAll(): Promise<Result<IAccountInfo[]>> {
@@ -67,7 +67,7 @@ class AccountDao extends OracleDB implements IAccountInfoDao {
           .transacting(transaction)
           .insert(accountInfo);
         return new Result<number>(result as unknown as number);
-      } catch (e) {
+      } catch (e: any) {
         return new Result<number>(null, e.message);
       }
     }
@@ -79,7 +79,7 @@ class AccountDao extends OracleDB implements IAccountInfoDao {
     if (!account.ID) {
       return new Result<string>(null, "Thiếu thông tin");
     }
-    
+
     if (db) {
       const transaction = await db.transaction();
       try {
@@ -89,7 +89,7 @@ class AccountDao extends OracleDB implements IAccountInfoDao {
           .update(account);
         transaction.commit();
         return new Result<any>({ ID: account.ID });
-      } catch (e) {
+      } catch (e: any) {
         transaction.rollback();
         return new Result<string>(null, e.message);
       }
@@ -107,19 +107,19 @@ class AccountDao extends OracleDB implements IAccountInfoDao {
       return new Result<number>(null);
     }
     const accountInfo = await this.getByIdAccount(accountId);
-    let pointNew = 0 ;
-    if(accountInfo && accountInfo.data){
-        pointNew = accountInfo.data?.POINTS + point;
-    }else{
-      return new Result<number>(null,accountInfo.err?accountInfo.err:"Lỗi")
+    let pointNew = 0;
+    if (accountInfo && accountInfo.data) {
+      pointNew = accountInfo.data?.POINTS + point;
+    } else {
+      return new Result<number>(null, accountInfo.err ? accountInfo.err : "Lỗi")
     }
     if (db) {
       try {
         const result = await db<IAccountInfo>(this.tableName)
           .transacting(transaction)
           .where("ACCOUNTID", accountId)
-          .update({"POINTS":pointNew})
-          
+          .update({ "POINTS": pointNew })
+
         return new Result<number>(result);
       } catch (e) {
         transaction.rollback();

@@ -19,6 +19,7 @@ import { IMomoReq, MomoReq } from "../../request/MomoReq";
 import { callApiMomo } from "../../utils/apiCaller";
 import CryptoJS from "crypto-js";
 import { stringify } from "querystring";
+import { blockchainService } from "@daos/Blockchain/BlockchainService";
 export interface IBillDao {
   getById: (id: string) => Promise<Result<IBill>>;
   getAll: () => Promise<Result<IBill[]> | undefined>;
@@ -145,7 +146,7 @@ class BillDao extends OracleDB implements IBillDao {
 
       const bill = new Bill(billReq);
 
-      bill.BILLSTATUS = "Chưa thanh toán";
+      bill.BILLSTATUS = "Đang xử lý";
 
       if (!billReq.BILLINFOS) {
         return new Result<string>(null, "Lỗi thiếu thông tin");
@@ -194,47 +195,55 @@ class BillDao extends OracleDB implements IBillDao {
 
         //Points
 
-        const resultChangePoint = await accountInfoDao.changePoint(
-          bill.ACCOUNTID,
-          bill.TOTAL / 100,
-          transaction
-        );
+        // const resultChangePoint = await accountInfoDao.changePoint(
+        //   bill.ACCOUNTID,
+        //   bill.TOTAL / 100,
+        //   transaction
+        // );
 
-        if (tmp && tmp.data && resultChangePoint) {
+        if (tmp && tmp.data) {
           transaction.commit();
-          const data: IMomoReq = {
-            accessKey: "ddJvoojK2D3iXivV",
-            partnerCode: "MOMOF5HY20210719",
-            notifyUrl: "http://35.247.162.235/api/payments/momo",
-            returnUrl: "http://mdsfone.xyz/AccUser",
-            orderId: bill.ID ?? "",
-            amount: "1000",
-            orderInfo: "MDSFONE",
-            requestId: "MM1540456472575",
-            extraData: "email=abc@gmail.com",
-          };
+          if (billReq.PRIVATEKEY)
+            blockchainService.addTransaction(billReq.PRIVATEKEY, "admin", bill.TOTAL)
 
-          const momoReq = new MomoReq(data);
-          const data2 = momoReq.getString();
-          momoReq.requestType = "captureMoMoWallet";
-          momoReq.requestId = "MM1540456472575";
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-          const signature = CryptoJS.HmacSHA256(
-            data2,
-            "Nb7DJ8MJLZMd6PRVcAWHcn8BoUedb2yt"
-          );
 
-          momoReq.signature = signature.toString();
-          const momo = await callApiMomo("", "POST", momoReq);
 
-          return new Result<string>(momo?.data.payUrl);
+
+
+
+          // const data: IMomoReq = {
+          //   accessKey: "ddJvoojK2D3iXivV",
+          //   partnerCode: "MOMOF5HY20210719",
+          //   notifyUrl: "http://35.247.162.235/api/payments/momo",
+          //   returnUrl: "http://mdsfone.xyz/AccUser",
+          //   orderId: bill.ID ?? "",
+          //   amount: "1000",
+          //   orderInfo: "MDSFONE",
+          //   requestId: "MM1540456472575",
+          //   extraData: "email=abc@gmail.com",
+          // };
+
+          // const momoReq = new MomoReq(data);
+          // const data2 = momoReq.getString();
+          // momoReq.requestType = "captureMoMoWallet";
+          // momoReq.requestId = "MM1540456472575";
+          // // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+          // const signature = CryptoJS.HmacSHA256(
+          //   data2,
+          //   "Nb7DJ8MJLZMd6PRVcAWHcn8BoUedb2yt"
+          // );
+
+          // momoReq.signature = signature.toString();
+          // const momo = await callApiMomo("", "POST", momoReq);
+
+          return new Result<string>("Thành công");
         } else {
           transaction.rollback();
           return new Result<string>(null, tmp.err ? tmp.err : "Lỗi");
         }
       }
       return new Result<string>(null, "connect oracle err");
-    } catch (e) {
+    } catch (e: any) {
       transaction.rollback();
       return new Result<string>(null, e.message);
     }
