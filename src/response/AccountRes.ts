@@ -9,9 +9,10 @@ export interface IAccountRes {
   ROLENAME?: string;
   POINTS?: number;
   CREATEDATE?: Date;
-  SEX? : string;
-  EMAIL?:string;
+  SEX?: string;
+  EMAIL?: string;
   BIRTHDAY?: Date;
+  WALLET?: string;
 }
 
 export class AccountRes implements IAccountRes {
@@ -23,10 +24,11 @@ export class AccountRes implements IAccountRes {
   public ROLENAME?: string;
   public POINTS?: number;
   public CREATEDATE?: Date;
-  public SEX? : string;
-  public EMAIL?:string;
+  public SEX?: string;
+  public EMAIL?: string;
   public BIRTHDAY?: Date;
-  
+  public WALLET?: string;
+
 
   constructor(
     ID?: string,
@@ -37,11 +39,12 @@ export class AccountRes implements IAccountRes {
     ROLE?: string,
     POINTS?: number,
     CREATEDATE?: Date,
-    SEX? : string,
-    EMAIL?:string,
-    BIRTHDAY?: Date
-    
-    
+    SEX?: string,
+    EMAIL?: string,
+    BIRTHDAY?: Date,
+    WALLET?: string
+
+
   ) {
     this.ACCOUNTID = ID;
     this.USERNAME = USERNAME;
@@ -52,7 +55,8 @@ export class AccountRes implements IAccountRes {
     this.POINTS = POINTS;
     this.CREATEDATE = CREATEDATE;
     this.SEX = SEX;
-    this.EMAIL =EMAIL;
+    this.EMAIL = EMAIL;
     this.BIRTHDAY = BIRTHDAY;
+    this.WALLET = WALLET;
   }
 }

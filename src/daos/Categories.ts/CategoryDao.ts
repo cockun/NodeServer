@@ -87,7 +87,7 @@ class CategoryDao extends OracleDB implements ICategoryDao {
         transaction.commit();
         transaction.rollback();
         return new Result<string>(category.ID);
-      } catch (e) {
+      } catch (e : any) {
         transaction.rollback();
         return new Result<string>(null, e.message);
       }

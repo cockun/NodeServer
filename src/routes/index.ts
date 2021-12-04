@@ -38,6 +38,21 @@ import {
   updateOneCategory,
   deleteOneCategory
 } from "../controllers/CategoriesController";
+
+import {
+  minningBlock,
+  addTransaction,
+  getPendingTransactions,
+  getBlockChain
+} from "../controllers/BlockchainController";
+
+
+
+
+
+
+
+
 import { coc } from "../controllers/RenderData";
 import { getMomoReq } from "../controllers/PaymentController";
 
@@ -48,7 +63,9 @@ const authRouter = Router();
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
 authRouter.post("/login", login);
 authRouter.get("/logout", logout);
+//
 
+//blockChain.get("/pendingTransaction", logout);
 // Product-router
 
 const productRouter = Router();
@@ -59,7 +76,7 @@ productRouter.get("/filter", filler);
 productRouter.get("/getid/:ID", getById);
 productRouter.get("/getSlug/:SLUG", getBySlug);
 productRouter.get("/all", getAllProducts);
-productRouter.get("/coc",coc)
+productRouter.get("/coc", coc)
 
 // Account-router 123 123 123
 const accountRouter = Router();
@@ -82,7 +99,7 @@ billRouter.get("/all", getAllBills);
 billRouter.post("/add", addOneBill);
 billRouter.put("/update", updateOneBill);
 billRouter.get("/getmany", GetManyById);
-billRouter.get("/filter",filterBills)
+billRouter.get("/filter", filterBills)
 
 //
 const categoryRouter = Router();
@@ -92,10 +109,13 @@ categoryRouter.put("/update", updateOneCategory);
 categoryRouter.delete("/delete/:id", deleteOneCategory);
 
 
-
-
+const blockChainRouter = Router();
+blockChainRouter.post("/miningBlock", minningBlock);
+blockChainRouter.get("/addTransaction", addTransaction);
+blockChainRouter.get("/getPendingTransactions", getPendingTransactions);
+blockChainRouter.get("/getPendingTransactions", getBlockChain);
 const paymentsRouter = Router();
-paymentsRouter.post("/momo",getMomoReq)
+paymentsRouter.post("/momo", getMomoReq)
 
 // Export the base-router
 const baseRouter = Router();
@@ -103,9 +123,10 @@ baseRouter.use("/auth", authRouter);
 baseRouter.use("/accounts", adminMW, accountRouter);
 baseRouter.use("/products", productRouter);
 baseRouter.use("/accountinfos", accountInfoRouter);
-baseRouter.use("/bills",billRouter)
-baseRouter.use("/categories",categoryRouter)
-baseRouter.use("/payments",paymentsRouter)
+baseRouter.use("/bills", billRouter)
+baseRouter.use("/categories", categoryRouter)
+baseRouter.use("/payments", paymentsRouter)
+baseRouter.use("/blockchain", blockChainRouter)
 export default baseRouter;
 
 

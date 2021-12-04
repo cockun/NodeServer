@@ -51,7 +51,7 @@ class BillInfoDao extends OracleDB implements IBillInfoDao {
           .transacting(transaction)
           .insert(billInfos);
         return new Result<number>(result as unknown as number);
-      } catch (e) {
+      } catch (e:any) {
         return new Result<number>(null, e.message);
       }
     }

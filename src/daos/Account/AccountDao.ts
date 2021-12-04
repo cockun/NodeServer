@@ -7,6 +7,7 @@ import { Helper } from "../../utils/Helper";
 import md5 from "md5";
 import { AccountRes, IAccountRes } from "../../response/AccountRes";
 import AccountInfoDao from "./AccountInfoDao";
+import { blockchainService } from "@daos/Blockchain/BlockchainService";
 
 export interface IAccountDao {
   getByUser: (user: string) => Promise<Result<IAccount>>;
@@ -108,7 +109,8 @@ class AccountDao extends OracleDB implements IAccountDao {
           p.CREATEDATE,
           p.SEX,
           p.EMAIL,
-          p.BIRTHDAY
+          p.BIRTHDAY,
+          p.WALLET
         );
       });
 
@@ -135,6 +137,7 @@ class AccountDao extends OracleDB implements IAccountDao {
     const db = this.OpenDB();
     if (db) {
       if (accountReq.PASSWORD) accountReq.PASSWORD = md5(accountReq.PASSWORD);
+      if (accountReq.WALLET) accountReq.WALLET = blockchainService.getKeyFromPrivateKey(accountReq.WALLET).publicKey;
       const result = await db<IAccountRes>(this.tableName)
         .select("*")
         .where(accountReq)
@@ -156,7 +159,8 @@ class AccountDao extends OracleDB implements IAccountDao {
           result.CREATEDATE,
           result.SEX,
           result.EMAIL,
-          result.BIRTHDAY
+          result.BIRTHDAY,
+          result.WALLET
         );
 
         return new Result<IAccountRes>(accountRes);
@@ -179,8 +183,9 @@ class AccountDao extends OracleDB implements IAccountDao {
   public async add(accountReq: IAccountReq): Promise<Result<string>> {
     const db = this.OpenDB();
     let account: Account;
+    const wallet = blockchainService.generateWallet();
     if (accountReq.USERNAME && accountReq.PASSWORD) {
-      account = new Account(accountReq.USERNAME, accountReq.PASSWORD);
+      account = new Account(accountReq.USERNAME, accountReq.PASSWORD, wallet.publicKey);
       accountReq.ID = account.ID;
     } else {
       return new Result<string>(null, "Vui lòng nhập đủ thông tin");
@@ -195,12 +200,12 @@ class AccountDao extends OracleDB implements IAccountDao {
         const result = await accountInfoDao.add(accountReq, transaction);
         if (result && result.data) {
           transaction.commit();
-          return new Result<string>(account.ID);
+          return new Result<string>(wallet.privateKey);
         } else {
           transaction.rollback();
           return new Result<string>(null, result.err ? result.err : "Error");
         }
-      } catch (e) {
+      } catch (e: any) {
         transaction.rollback();
         return new Result<string>(null, e.message);
       }
