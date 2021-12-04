@@ -182,16 +182,16 @@ class BillDao extends OracleDB implements IBillDao {
         const tmp = await billInfoDao.add(billInfos, transaction);
 
         //SOLD
-        for (let i = 0; i < billInfos.length; ++i) {
-          const tmp = await productDao.changeSold(
-            billInfos[i].PRODUCTID,
-            billInfos[i].QUANTITY,
-            transaction
-          );
-          if (!tmp.data) {
-            return new Result<string>(null, tmp.err ? tmp.err : "Lỗi");
-          }
-        }
+        // for (let i = 0; i < billInfos.length; ++i) {
+        //   const tmp = await productDao.changeSold(
+        //     billInfos[i].PRODUCTID,
+        //     billInfos[i].QUANTITY,
+        //     transaction
+        //   );
+        //   if (!tmp.data) {
+        //     return new Result<string>(null, tmp.err ? tmp.err : "Lỗi");
+        //   }
+        // }
 
         //Points
 
@@ -202,10 +202,23 @@ class BillDao extends OracleDB implements IBillDao {
         // );
 
         if (tmp && tmp.data) {
-          transaction.commit();
-          if (billReq.PRIVATEKEY)
-            blockchainService.addTransaction(billReq.PRIVATEKEY, "admin", bill.TOTAL)
 
+          try {
+            if (billReq.PRIVATEKEY) {
+
+              blockchainService.addTransaction(billReq.PRIVATEKEY, "04f3a46bccb02267bd55bb303cd4616b58e5cafb14fd43b29bb8185c7f1f7dddda3fb9f48c17535dd9e51c8f0db1b9cd44ec7c6897e91cee8d8085b30ecd0dd1ee", bill.TOTAL)
+              transaction.commit();
+            } else {
+              return new Result<string>(null, "PrivateKey null");
+            }
+
+
+
+            return new Result<string>("Thành công");
+          } catch (e: any) {
+            return new Result<string>(null, e.message);
+
+          }
 
 
 
@@ -236,7 +249,7 @@ class BillDao extends OracleDB implements IBillDao {
           // momoReq.signature = signature.toString();
           // const momo = await callApiMomo("", "POST", momoReq);
 
-          return new Result<string>("Thành công");
+
         } else {
           transaction.rollback();
           return new Result<string>(null, tmp.err ? tmp.err : "Lỗi");

@@ -18,9 +18,10 @@ class BlockchainService implements IBlockchainService {
         this.blockchainInstance = new Blockchain();
         this.wallets = [];
 
-        const adminWallet = this.generateWallet();
+        const adminWallet = this.getKeyFromPrivateKey("8e81c77ca8051da9693c99520af6c82c612d8b0f81131cd0346a6b198d540e35")
 
-        this.blockchainInstance.minePendingTransactions(adminWallet.publicKey);
+        this.blockchainInstance.minePendingTransactions(adminWallet.publicKey, 100000000000);
+        console.log(this.blockchainInstance.getBalanceOfAddress("04f3a46bccb02267bd55bb303cd4616b58e5cafb14fd43b29bb8185c7f1f7dddda3fb9f48c17535dd9e51c8f0db1b9cd44ec7c6897e91cee8d8085b30ecd0dd1ee"))
     }
 
     public generateWallet(): Wallet {
@@ -42,8 +43,12 @@ class BlockchainService implements IBlockchainService {
     }
 
     public minningBlock(address: string) {
+
         if (this.blockchainInstance.pendingTransactions.length > 0)
             this.blockchainInstance.minePendingTransactions(address);
+        else {
+            throw new Error("Không có transaction pendding");
+        }
     }
 
     public getPendingTransactions(): Transaction[] {
@@ -54,6 +59,16 @@ class BlockchainService implements IBlockchainService {
     public getBlockChain(): Block[] {
         return this.blockchainInstance.chain;
     }
+
+    public isValidAdress(address: string): boolean {
+        for (let i = 0; i < this.wallets.length; ++i) {
+            if (address === this.wallets[i]) return true
+        }
+        return false
+    }
+
+
+
 
 
 
