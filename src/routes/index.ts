@@ -43,7 +43,8 @@ import {
   minningBlock,
   addTransaction,
   getPendingTransactions,
-  getBlockChain
+  getBlockChain,
+  getBalance
 } from "../controllers/BlockchainController";
 
 
@@ -111,9 +112,10 @@ categoryRouter.delete("/delete/:id", deleteOneCategory);
 
 const blockChainRouter = Router();
 blockChainRouter.post("/miningBlock", minningBlock);
-blockChainRouter.get("/addTransaction", addTransaction);
+blockChainRouter.post("/addTransaction", addTransaction);
 blockChainRouter.get("/getPendingTransactions", getPendingTransactions);
 blockChainRouter.get("/getPendingTransactions", getBlockChain);
+blockChainRouter.get("/getBalance", getBalance);
 const paymentsRouter = Router();
 paymentsRouter.post("/momo", getMomoReq)
 

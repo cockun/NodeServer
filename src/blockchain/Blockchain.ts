@@ -28,8 +28,12 @@ export class Blockchain implements IBlockchain {
     getLatestBlock() {
         return this.chain[this.chain.length - 1];
     }
-    minePendingTransactions(miningRewardAddress: string) {
-        const rewardTx = new Transaction( null, miningRewardAddress, this.miningReward);
+    minePendingTransactions(miningRewardAddress: string, miningReward?: number) {
+        let miningRewardz = this.miningReward
+        if (miningReward) {
+            miningRewardz = miningReward
+        }
+        const rewardTx = new Transaction(null, miningRewardAddress, miningRewardz);
         this.pendingTransactions.push(rewardTx);
         const block = new Block(Date.now(), this.pendingTransactions, this.getLatestBlock().hash);
         block.mineBlock(this.difficulty);
@@ -67,11 +71,11 @@ export class Blockchain implements IBlockchain {
         for (const block of this.chain) {
             for (const trans of block.transactions) {
                 if (trans.fromAddress === address) {
-                    balance -= trans.amount;
+                    balance -= Number(trans.amount);
                 }
 
                 if (trans.toAddress === address) {
-                    balance += trans.amount;
+                    balance += Number(trans.amount)
                 }
             }
         }
